@@ -47,6 +47,15 @@ PASSWORD='your password'
 
 Apps Script answers with a redirect, so always use `-L`. Requests are sent as `text/plain`, like the app does.
 
+**On Windows**, use PowerShell's `Invoke-RestMethod` instead (it follows the redirect itself). For example, the no-token check:
+
+```powershell
+$EXEC = 'https://script.google.com/macros/s/PASTE_YOUR_ID/exec'
+Invoke-RestMethod -Method Post -Uri $EXEC -ContentType 'text/plain' -Body '{"action":"getAll"}'
+# ok    : False
+# error : @{code=AUTH; message=Please sign in.}
+```
+
 **Health check (GET):**
 ```bash
 curl -sL "$EXEC"

@@ -360,7 +360,7 @@ npm install
 npm run dev
 ```
 
-Open the printed local address with your personal-link suffix (`?connect=…`) to point the local app at a real test sheet, or set `VITE_DEMO=1` in `app/.env.local` to use built-in sample data with no sheet at all.
+Open the printed local address with your personal-link suffix (`?connect=…`) to point the local app at a real test sheet, or set `VITE_DEMO=1` in `app/.env.local` to use built-in sample data with no sheet at all. In demo mode, sign in with any email and the password `demo-password`.
 
 **Optional: edit the connector from this repo with clasp**
 
