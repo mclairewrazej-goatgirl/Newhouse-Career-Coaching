@@ -121,17 +121,39 @@ function lockedUntil_() {
   return t > Date.now() ? t : 0;
 }
 
-function recordFailedLogin_() {
-  var cache = CacheService.getScriptCache();
-  var fails = Number(cache.get('login_fails') || 0) + 1;
-  if (fails >= MAX_FAILED_LOGINS) {
-    var until = Date.now() + LOCKOUT_MINUTES * 60 * 1000;
-    cache.put('login_locked_until', String(until), LOCKOUT_MINUTES * 60);
-    cache.remove('login_fails');
-    return until;
+/**
+ * Counts a sign-in try before the password is checked, under the script lock,
+ * so many tries sent at once can't slip past the limit. Throws LOCKED when
+ * sign-in is paused or the limit has been used up.
+ */
+function reserveLoginAttempt_() {
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(LOCK_WAIT_MS)) throw apiError_('SERVER', 'Your sheet is busy. Please try again in a moment.');
+  try {
+    var until = lockedUntil_();
+    if (until) throw apiError_('LOCKED', lockedMessage_(until));
+    var cache = CacheService.getScriptCache();
+    var used = Number(cache.get('login_fails') || 0);
+    if (used >= MAX_FAILED_LOGINS) throw apiError_('LOCKED', lockedMessage_(lockOut_()));
+    cache.put('login_fails', String(used + 1), LOCKOUT_MINUTES * 60);
+  } finally {
+    lock.releaseLock();
   }
-  cache.put('login_fails', String(fails), LOCKOUT_MINUTES * 60);
-  return 0;
+}
+
+/** Pauses sign-in for LOCKOUT_MINUTES; returns when it ends. */
+function lockOut_() {
+  var cache = CacheService.getScriptCache();
+  var until = Date.now() + LOCKOUT_MINUTES * 60 * 1000;
+  cache.put('login_locked_until', String(until), LOCKOUT_MINUTES * 60);
+  cache.remove('login_fails');
+  return until;
+}
+
+/** After a wrong password: pauses sign-in once the tries are used up. Returns the pause end, or 0. */
+function recordFailedLogin_() {
+  var fails = Number(CacheService.getScriptCache().get('login_fails') || 0);
+  return fails >= MAX_FAILED_LOGINS ? lockOut_() : 0;
 }
 
 function lockedMessage_(until) {
@@ -148,11 +170,10 @@ function login_(payload) {
     throw apiError_('BAD_INPUT', 'Enter your email and password.');
   }
 
-  var until = lockedUntil_();
-  if (until) throw apiError_('LOCKED', lockedMessage_(until));
-
   var auth = readAuth_();
   if (!auth) throw apiError_('AUTH', "Sign-in isn't set up yet. Open your sheet and choose Coaching Tracker › 2. Finish setup.");
+
+  reserveLoginAttempt_();
 
   var hash = hashPassword_(password, auth.salt, auth.iterations || HASH_ITERATIONS);
   var emailOk = constantTimeEquals_(email, auth.email);

@@ -94,6 +94,8 @@ You only do this once, no matter how many coaches use the app.
 
 Do this on a **laptop or desktop computer** (Google's script screens are hard to use on a phone). You'll need the `/copy` link from the developer.
 
+> A one-page version of Parts B and C, with screenshots, is in [docs/COACH-QUICKSTART.md](docs/COACH-QUICKSTART.md). Send that to the coach with the `/copy` link.
+
 ### B1. Make your own copy of the sheet
 
 1. Make sure you're signed in to **your own** Google account in the browser.
@@ -148,21 +150,29 @@ You're done. 🎉
 
 **Schedule tab**
 - Dots on the calendar show **planned** sessions (teal) and **logged** sessions (grey). Tap a day to see them.
-- **+ Plan a session**: pick the client, date, start time, how long it's booked for, and (optionally) paste the Google Meet link.
+- **+ Plan a session**: pick the client, date, start time, how long it's booked for, and (optionally) paste the Google Meet link. If you already have someone booked that day, the form lists them so you can avoid a clash (you can still book).
+- **Start unbooked session** (next to *+ Plan a session*): for a session that wasn't planned. Pick the client and length and it starts straight away.
 
 **Running a session**
-- Tap **Open session** on a planned session. At the top you'll see the **Join Google Meet** button, the **goals for today** (the next steps agreed last time), and **what you covered last time**.
-- Tap **Begin session** to start the timer. It keeps counting if you switch apps or your screen locks.
-- Add points under **What you covered** and **Next steps**: type a point, press Enter or **+**. Tap **×** to remove one.
+- Tap **Start session** on one of today's planned sessions (on the *Next up* card, in the day list, or on the client's page). At the top you'll see the **Join Google Meet** button, the **goals for today** (the next steps agreed last time), and **what you covered last time**.
+- Tap **Begin** to start the timer, and **Pause** / **Resume** as needed. It keeps counting if you switch apps or your screen locks, and the bar turns orange if you go over the booked time.
+- Add points under **What you covered** and **Next steps**: type a point, press Enter or **+**. Tap a point to change it, use **↑ ↓** to reorder, and **×** to remove one. Notes are kept on the device as you type, so a refresh or flat battery doesn't lose them.
+- You can leave the session screen to look something up. A green **Session in progress** bar above the tabs brings you back. Only one session can run at a time.
 - **Mentor connections** sits below the notes. It shows the mentors this client is already connected with (with Email and Call buttons) and lets you change *suggested* to *introduced*. Tap **+ Add mentor connection** to connect someone new mid-conversation; you'll see the mentor's notes and a warning if they've been asked a lot lately.
 - Tap **End, save & log**. The session is saved to your sheet, shows on the calendar, and adds to the client's total time.
 - The app then offers to **book the next session**, pre-filled a week later at the same time with the same Meet link. Change anything, or tap **Not now**.
+- Started one by mistake? **Discard session** at the bottom deletes it without saving anything.
 
 **Clients tab**
 - **+ Add client**: name and an optional coaching focus.
 - Tap a client to see total time in their coaching block, their next booking, their mentor connections, and every past session's notes.
 - **Mentor connections** on a client's page: tap **+ Connect**, pick a mentor, and choose either *Suggested they get in touch* or *I reached out and introduced them*. You can change it later from the same drop-down (for example, from suggested to introduced). If a mentor has already been connected with 3 or more clients in the last 90 days, you'll see a gentle "give them a break" warning.
-- **Coaching summary (PDF)** at the bottom of a client's page shows a clean document of every session: date, time, what you covered and next steps, and, optionally, the contact details of mentors you connected them with. Tap **Save as PDF or print**, then choose **Save as PDF** in your phone or computer's print screen. Keep it on file or email it to the client.
+- **Coaching summary (PDF)** at the top of a client's page shows a clean document of every session: date, time, what you covered and next steps, plus the mentors you connected them with. Tick **Include mentor contact details** to add their email and phone. Tap **Save as PDF or print**, then:
+  - **iPhone:** in the print screen, tap the **share** button at the top and choose **Save to Files** (or **Mail** to send it). On older iPhones, pinch outwards on the page preview to open the PDF, then share it.
+  - **Android:** choose **Save as PDF** as the printer, then tap the download button.
+  - **Computer (Chrome, Edge or Safari):** set the printer/destination to **Save as PDF** and click **Save**.
+
+  The file is named *Coaching summary – Client name – date*. Ratings (Helped / Didn't help) are never included.
 
 **Mentors tab**
 - Your list of people you send clients to: name, role, organization, email, phone and notes (e.g. "prefers email intros").
@@ -175,7 +185,9 @@ You're done. 🎉
 - **Suggestions you gave** lists every next step from those sessions. Mark each as **Helped** or **Didn't help**, and filter to see only what helped (or didn't). You can also mark these during the next session: the *Goals for today* card has the same buttons.
 
 **Account tab**
-- Shows who's signed in, whether everything is saved to your sheet, and buttons to **Open my Google Sheet**, **Sync now** and **Sign out**.
+- Shows who's signed in, whether everything is saved to your sheet (and how many changes are waiting), and buttons to **Open my Google Sheet**, **Sync now** and **Sign out**.
+- **How this works** explains, in plain words, where your notes live, and how to reset a forgotten password from the sheet.
+- If your sheet ever refuses a change (for example, a client was deleted in the sheet by hand), a short message pops up and the details show here.
 
 **No internet?** Sessions you log are kept on the device and sent to your sheet automatically when you're back online. The Account tab shows how many are waiting.
 
@@ -199,7 +211,7 @@ Forgot your password? Same steps. You don't need the old one.
 
 **The connector (script in the sheet):** when the developer releases a new connector version, each coach needs to update their copy:
 
-1. Developer sends the updated files from `apps-script/`.
+1. Developer sends the updated files from `apps-script/` (see [CHANGELOG.md](CHANGELOG.md) for what changed).
 2. In your sheet: **Extensions › Apps Script**. Paste the new code over the old files and click **Save**.
 3. **Deploy › Manage deployments**. Select your *Coaching Tracker* deployment and click the **pencil (edit)** icon.
 4. Under **Version**, choose **New version**. Click **Deploy**.
@@ -230,7 +242,9 @@ Forgot your password? Same steps. You don't need the old one.
 - The data lives only in the coach's Google Sheet, which is private to the coach unless *they* share it.
 - Every request to the connector must include a sign-in token. Without one it returns nothing. Tokens come only from signing in with the correct email and password.
 - Passwords are stored salted and hashed in the script's private settings, not in the sheet, and never in plain text.
-- Repeated wrong passwords trigger a 15-minute lockout.
+- Five wrong passwords in a row pause sign-in for 15 minutes. Tries are counted before the password is checked, so sending many at once doesn't get around the limit. (The flip side: someone who knows your app link could keep sign-in paused by guessing. If that ever happens, change your password from the sheet, which also clears the pause.)
+- Text that starts with `=`, `+`, `-` or `@` is saved with a leading `'` so the sheet never treats it as a formula.
+- Every request has a size limit, and every field has a length limit.
 - Sign-ins expire after 30 days, and changing the password signs out every device.
 - The app (GitHub Pages) holds no client data and has no access to anyone's Google account.
 
@@ -345,8 +359,10 @@ Newhouse-Career-Coaching/
 │   ├── Shared.gs           # pure helpers: schema, validation, row mapping (mirrored in app/src/shared)
 │   ├── Menu.gs             # sheet menu: Prepare, Finish setup, Change password
 │   ├── Setup.html          # the "Finish setup" side panel
-│   └── TESTING.md          # checklist + curl commands for a test copy
+│   └── TESTING.md          # checklist + PowerShell/curl commands for a test copy
 ├── .github/workflows/deploy.yml
+├── docs/COACH-QUICKSTART.md  # one-page setup and daily-use guide for the coach
+├── CHANGELOG.md            # what changed in each connector version
 ├── CLAUDE.md               # context for Claude Code
 ├── WORKPLAN.md             # phased build plan
 └── README.md

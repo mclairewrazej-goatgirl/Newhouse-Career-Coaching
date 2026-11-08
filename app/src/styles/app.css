@@ -98,14 +98,14 @@ select.field{appearance:none;background-image:linear-gradient(45deg,transparent 
 .next-card{display:flex;flex-direction:column;gap:4px}
 .next-name{font-size:1.375rem;font-weight:700}
 
-.calendar{padding:12px 8px 12px}
+.calendar{padding:12px 6px 12px}
 .cal-head{display:flex;align-items:center;justify-content:space-between;padding:0 4px 8px}
 .cal-title{font-size:1.125rem}
 .icon-btn{min-width:44px;min-height:44px;border-radius:50%;border:0;background:none;color:var(--accent);font-size:1.5rem;line-height:1}
 .icon-btn:hover{background:var(--bg)}
 .cal-grid{width:100%;border-collapse:collapse;table-layout:fixed}
 .cal-grid th{font-size:.75rem;color:var(--muted);font-weight:600;padding:4px 0}
-.cal-grid td{padding:2px;text-align:center}
+.cal-grid td{padding:2px 0;text-align:center}
 .cal-day{width:100%;max-width:48px;aspect-ratio:1/1.05;min-height:44px;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:12px;border:2px solid transparent;background:none;color:var(--ink);font-size:.9375rem;font-weight:500;padding:0}
 .cal-day.other-month{color:var(--muted);opacity:.6}
 .cal-day[aria-current="date"]{border-color:var(--accent)}
@@ -210,3 +210,46 @@ select.field{appearance:none;background-image:linear-gradient(45deg,transparent 
 .review-item{display:flex;flex-direction:column;gap:6px;padding:14px 20px}
 .head-actions{display:flex;flex-wrap:wrap;gap:8px}
 .notice .bullets{margin:4px 0}
+
+/* ---------- coaching summary (screen preview + print) ---------- */
+.check{display:flex;align-items:center;gap:10px;min-height:44px;font-weight:600;cursor:pointer}
+.check input{width:22px;height:22px;accent-color:var(--accent);flex:none}
+.print-doc{background:#fff;color:#111;border:1px solid var(--line);border-radius:var(--radius-card);padding:28px 24px;font-size:.9375rem;line-height:1.5}
+.print-doc h1,.print-doc h2,.print-doc h3{font-family:var(--font-display)}
+.doc-head{border-bottom:2px solid #111;padding-bottom:12px;margin-bottom:8px}
+.doc-kicker{text-transform:uppercase;letter-spacing:.06em;font-size:.75rem;font-weight:700;color:#444}
+.doc-name{font-size:1.625rem;line-height:1.2;margin:2px 0}
+.doc-focus{font-style:italic;color:#333}
+.doc-meta{margin-top:6px;color:#333}
+.doc-session{padding:14px 0;border-bottom:1px solid #ccc;break-inside:avoid;page-break-inside:avoid}
+.doc-session h2{font-size:1.0625rem;margin:0 0 4px}
+.doc-time{font-weight:500;color:#444}
+.doc-session h3{font-size:.8125rem;text-transform:uppercase;letter-spacing:.04em;color:#444;margin:8px 0 2px}
+.doc-session ul{margin:0;padding-left:20px}
+.doc-empty{color:#555}
+.doc-people{list-style:none;padding-left:0!important;display:flex;flex-direction:column;gap:6px}
+.doc-contact{display:block;color:#333}
+.doc-foot{margin-top:14px;font-size:.8125rem;color:#555}
+
+@media print{
+  @page{margin:18mm 16mm}
+  body{background:#fff!important;color:#000}
+  .bottom,.tabbar,.live-bar,.no-print,.sync,.back,.notice{display:none!important}
+  .shell-main{padding:0!important;max-width:none;gap:0}
+  .shell-main>*:not(.print-doc){display:none!important}
+  .print-doc{border:0;border-radius:0;padding:0;font-size:11pt;color:#000}
+  .doc-session{break-inside:avoid}
+  .doc-session h2{break-after:avoid}
+  a{color:#000;text-decoration:none}
+}
+
+/* ---------- loading and toasts ---------- */
+.skeleton{display:flex;flex-direction:column;gap:18px}
+.sk-row{display:flex;flex-direction:column;gap:8px}
+.sk-line{display:block;height:14px;border-radius:7px;background:var(--line);animation:sk 1.4s ease-in-out infinite}
+.sk-line.short{width:35%;height:10px}
+@keyframes sk{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.sk-line{animation:none}}
+.toast{margin:0 auto 8px;width:calc(100% - 32px);max-width:608px;display:flex;align-items:center;gap:8px;justify-content:space-between;background:var(--ink);color:#fff;border-radius:var(--radius-field);padding:8px 8px 8px 14px;font-size:.9375rem;box-shadow:0 4px 16px rgba(0,0,0,.18)}
+.toast-actions{display:flex;gap:4px;flex:none}
+.toast-btn{min-width:44px;min-height:44px;padding:0 10px;background:none;border:0;color:#fff;font-weight:700;text-decoration:underline}

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ClientForm } from '../components/ClientForm';
+import { FirstLoad } from '../components/Skeleton';
 import { SyncStatus } from '../components/SyncStatus';
 import { clientTotals, formatWhen, nextBooking, sortClients } from '../shared/clients';
 import { newId, nowIsoWithOffset } from '../shared/ids';
@@ -15,7 +16,7 @@ interface Props {
 
 export function Clients({ openId, onOpen, onPlan }: Props) {
   const { sync } = useApp();
-  const { data, status, loading } = useSync();
+  const { data, status } = useSync();
   const [adding, setAdding] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
 
@@ -67,7 +68,7 @@ export function Clients({ openId, onOpen, onPlan }: Props) {
 
       {adding && <ClientForm submitLabel="Save client" onSave={add} onCancel={() => setAdding(false)} />}
 
-      {!data && loading && <p className="muted" role="status">Loading your clients…</p>}
+      {!data && <FirstLoad label="Loading your clients…" />}
       {data && active.length === 0 && !adding && (
         <div className="card"><p className="muted">No clients yet. Tap <strong>+ Add client</strong> to add your first.</p></div>
       )}

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { Planned } from '../api/types';
 import { MonthCalendar } from '../components/MonthCalendar';
 import { PlanForm } from '../components/PlanForm';
+import { FirstLoad } from '../components/Skeleton';
 import { SyncStatus } from '../components/SyncStatus';
 import { formatTime, formatWhen, nextBooking } from '../shared/clients';
 import { toDateString } from '../shared/dates';
@@ -38,7 +39,7 @@ function SessionButton({ p, today, liveId, onOpen }: { p: Planned; today: string
 
 export function Schedule({ onOpenClient, planFor, onPlanForHandled }: Props) {
   const { sync, live: liveStore } = useApp();
-  const { data, status, loading } = useSync();
+  const { data, status } = useSync();
   const nav = useNav();
   const live = useLive(liveStore);
   const now = new Date();
@@ -102,7 +103,7 @@ export function Schedule({ onOpenClient, planFor, onPlanForHandled }: Props) {
         />
       )}
 
-      {!data && loading && <p className="muted" role="status">Loading your schedule…</p>}
+      {!data && <FirstLoad label="Loading your schedule…" />}
 
       {data && !form && (
         <section className="card next-card" aria-labelledby="next-up">

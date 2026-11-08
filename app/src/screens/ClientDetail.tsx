@@ -7,6 +7,7 @@ import { toDateString } from '../shared/dates';
 import { formatMinutes } from '../shared/minutes';
 import { useApp, useSync } from '../state/AppContext';
 import { useLive } from '../state/live';
+import { CoachingSummary } from './CoachingSummary';
 import { useNav } from '../state/nav';
 
 const OUTCOME_LABEL: Record<Suggestion['outcome'], string> = { '': '', helpful: 'Helped', not: "Didn't help" };
@@ -53,8 +54,10 @@ export function ClientDetail({ clientId, onBack, onPlan }: { clientId: string; o
   const nav = useNav();
   const live = useLive(liveStore);
   const [editing, setEditing] = useState(false);
+  const [summary, setSummary] = useState(false);
   const client = data?.clients.find((c) => c.clientId === clientId);
   if (!data || !client) return null;
+  if (summary) return <CoachingSummary clientId={clientId} onBack={() => { setSummary(false); window.scrollTo(0, 0); }} />;
 
   const now = new Date();
   const totals = clientTotals(clientId, data.sessions);
@@ -92,6 +95,9 @@ export function ClientDetail({ clientId, onBack, onPlan }: { clientId: string; o
           {!client.active && <p><span className="tag">Archived</span></p>}
           <div className="row">
             <button type="button" className="btn-quiet" onClick={() => setEditing(true)}>Edit</button>
+            <button type="button" className="btn-quiet" onClick={() => { setSummary(true); window.scrollTo(0, 0); }}>
+              Coaching summary (PDF)
+            </button>
             <button type="button" className="btn-quiet" onClick={toggleArchive}>
               {client.active ? 'Archive client' : 'Restore client'}
             </button>
