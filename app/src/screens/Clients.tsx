@@ -7,11 +7,16 @@ import { formatMinutes } from '../shared/minutes';
 import { useApp, useSync } from '../state/AppContext';
 import { ClientDetail } from './ClientDetail';
 
-export function Clients() {
+interface Props {
+  openId: string | null;
+  onOpen: (clientId: string | null) => void;
+  onPlan: (clientId: string) => void;
+}
+
+export function Clients({ openId, onOpen, onPlan }: Props) {
   const { sync } = useApp();
   const { data, status, loading } = useSync();
   const [adding, setAdding] = useState(false);
-  const [openId, setOpenId] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
 
   const now = new Date();
@@ -20,7 +25,7 @@ export function Clients() {
   const archived = all.filter((c) => !c.active);
 
   if (openId && data?.clients.some((c) => c.clientId === openId)) {
-    return <ClientDetail clientId={openId} onBack={() => setOpenId(null)} />;
+    return <ClientDetail clientId={openId} onBack={() => onOpen(null)} onPlan={() => onPlan(openId)} />;
   }
 
   function add(name: string, focus: string) {
@@ -34,7 +39,7 @@ export function Clients() {
     const next = nextBooking(c.clientId, data?.planned ?? [], now);
     return (
       <li key={c.clientId}>
-        <button type="button" className="list-button" onClick={() => setOpenId(c.clientId)}>
+        <button type="button" className="list-button" onClick={() => onOpen(c.clientId)}>
           <span className="list-main">
             <span className="list-title">{c.name}</span>
             {c.focus && <span className="muted">{c.focus}</span>}

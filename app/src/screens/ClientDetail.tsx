@@ -43,7 +43,7 @@ function SessionCard({ session, suggestions, now }: { session: Session; suggesti
   );
 }
 
-export function ClientDetail({ clientId, onBack }: { clientId: string; onBack: () => void }) {
+export function ClientDetail({ clientId, onBack, onPlan }: { clientId: string; onBack: () => void; onPlan: () => void }) {
   const { sync } = useApp();
   const { data } = useSync();
   const [editing, setEditing] = useState(false);
@@ -114,7 +114,10 @@ export function ClientDetail({ clientId, onBack }: { clientId: string; onBack: (
               )}
             </>
           ) : (
-            <p className="muted">Nothing booked yet.</p>
+            <>
+              <p className="muted">Nothing booked yet.</p>
+              <button type="button" className="btn-primary link-button" onClick={onPlan}>+ Plan a session</button>
+            </>
           )}
         </section>
       )}
