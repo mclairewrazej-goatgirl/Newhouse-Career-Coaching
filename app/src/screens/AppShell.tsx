@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { Account } from './Account';
 import { Clients } from './Clients';
+import { Schedule } from './Schedule';
 
 export type Tab = 'schedule' | 'clients' | 'account';
 
@@ -19,30 +20,41 @@ const TABS: { id: Tab; label: string; icon: ReactNode }[] = [
   },
 ];
 
-function Placeholder({ title, text }: { title: string; text: string }) {
-  return (
-    <>
-      <h1 className="display page-title">{title}</h1>
-      <div className="card"><p className="muted">{text}</p></div>
-    </>
-  );
-}
-
 export function AppShell() {
   const [tab, setTab] = useState<Tab>('schedule');
+  const [openClientId, setOpenClientId] = useState<string | null>(null);
+  const [planFor, setPlanFor] = useState<string | null>(null);
+
+  const go = (t: Tab) => {
+    setTab(t);
+    setOpenClientId(null);
+    window.scrollTo(0, 0);
+  };
 
   return (
     <div className="shell">
       <main className="shell-main">
-        {tab === 'schedule' && <Placeholder title="Schedule" text="Your planned and logged sessions will show here." />}
-        {tab === 'clients' && <Clients />}
+        {tab === 'schedule' && (
+          <Schedule
+            onOpenClient={(id) => { setTab('clients'); setOpenClientId(id); window.scrollTo(0, 0); }}
+            planFor={planFor}
+            onPlanForHandled={() => setPlanFor(null)}
+          />
+        )}
+        {tab === 'clients' && (
+          <Clients
+            openId={openClientId}
+            onOpen={(id) => { setOpenClientId(id); window.scrollTo(0, 0); }}
+            onPlan={(id) => { setPlanFor(id); go('schedule'); }}
+          />
+        )}
         {tab === 'account' && <Account />}
       </main>
       <nav className="tabbar" aria-label="Main">
         {TABS.map((t) => (
           <button
             key={t.id} type="button" className="tab" aria-current={tab === t.id ? 'page' : undefined}
-            onClick={() => setTab(t.id)}
+            onClick={() => go(t.id)}
           >
             <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor"
               strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{t.icon}</svg>
