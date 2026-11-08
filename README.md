@@ -62,10 +62,10 @@ You only do this once, no matter how many coaches use the app.
 
 ### A1. Publish the app on GitHub Pages
 
-1. Push this repository to GitHub (e.g. `mclairewrazej-goatgirl/coaching-tracker`).
+1. Push this repository to GitHub (e.g. `mclairewrazej-goatgirl/Newhouse-Career-Coaching`).
 2. On GitHub: **Settings › Pages › Build and deployment › Source: GitHub Actions**.
 3. Push to `main`. The workflow in `.github/workflows/deploy.yml` builds the app and publishes it.
-4. Your app will be at `https://mclairewrazej-goatgirl.github.io/coaching-tracker/`. Open it. You should see the "This app isn't linked to a sheet yet" screen. That's correct.
+4. Your app will be at `https://mclairewrazej-goatgirl.github.io/Newhouse-Career-Coaching/`. Open it. You should see the "This app isn't linked to a sheet yet" screen. That's correct.
 
 ### A2. Build the template sheet
 
@@ -332,7 +332,7 @@ Bullet lists are stored one point per line inside the cell, so they stay readabl
 ## Repository layout and local development
 
 ```
-coaching-tracker/
+Newhouse-Career-Coaching/
 ├── app/                    # The front end (React + Vite + TypeScript, PWA)
 │   ├── src/
 │   └── vite.config.ts
