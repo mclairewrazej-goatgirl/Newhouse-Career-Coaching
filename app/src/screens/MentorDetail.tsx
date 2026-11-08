@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ContactTag } from '../components/MentorConnections';
 import { MentorForm } from '../components/MentorForm';
 import { formatDay } from '../shared/clients';
 import { MENTOR_RECENT_DAYS, mentorConnections, needsBreak, recentUseCount, STATUS_SHORT, telHref, usageLabel } from '../shared/mentors';
@@ -82,6 +83,7 @@ export function MentorDetail({ mentorId, onBack }: { mentorId: string; onBack: (
                     <span className="list-meta">
                       <span className={`tag tag-${link.status}`}>{STATUS_SHORT[link.status]}</span> {formatDay(link.date, now)}
                       {pastClient && ' · past client'}
+                      {' '}<ContactTag link={link} />
                     </span>
                   </span>
                   <span className="chevron" aria-hidden="true">›</span>

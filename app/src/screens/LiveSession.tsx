@@ -3,7 +3,7 @@ import type { PlannedInput } from '../api/types';
 import { BulletEditor } from '../components/BulletEditor';
 import { Columns } from '../components/Columns';
 import { MentorConnections } from '../components/MentorConnections';
-import { OutcomeToggle } from '../components/OutcomeToggle';
+import { GoalItem } from '../components/GoalItem';
 import { PlanForm } from '../components/PlanForm';
 import { clientSessions, formatDay, formatTime, sessionSuggestions } from '../shared/clients';
 import { addDays, toDateString } from '../shared/dates';
@@ -109,6 +109,7 @@ function StartForm({ startFor, onStart, onCancel }: { startFor?: string; onStart
 /** The last logged session: what was covered and the suggestions to check in on. */
 function PrepCard({ live }: { live: Live }) {
   const { data } = useSync();
+  const { live: store } = useApp();
   if (!data) return null;
   const now = new Date();
   const last = clientSessions(live.clientId, data.sessions).find((s) => s.sessionId !== live.sessionId);
@@ -131,8 +132,12 @@ function PrepCard({ live }: { live: Live }) {
             <ul className="goal-list">
               {goals.map((g) => (
                 <li key={g.suggestionId} className="goal">
-                  <span>{g.text}</span>
-                  <OutcomeToggle suggestion={g} />
+                  <span className="goal-text">{g.text}</span>
+                  <GoalItem
+                    suggestion={g}
+                    carried={live.nextSteps.includes(g.text)}
+                    onCarry={() => store.update((x) => (x.nextSteps.includes(g.text) ? x : { ...x, nextSteps: [...x.nextSteps, g.text] }))}
+                  />
                 </li>
               ))}
             </ul>

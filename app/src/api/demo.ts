@@ -46,11 +46,11 @@ export function demoData(today: Date = new Date()): AllData {
   ];
 
   const suggestions: Suggestion[] = [
-    { suggestionId: 'g_demo0001', sessionId: 's_demo0001', clientId: 'c_jordan01', clientName: name('c_jordan01'), date: d(-7), text: 'Add two quotes from interview notes', outcome: 'helpful', outcomeAt: STAMP(d(-2)) },
-    { suggestionId: 'g_demo0002', sessionId: 's_demo0001', clientId: 'c_jordan01', clientName: name('c_jordan01'), date: d(-7), text: 'Send the draft to Dana by Friday', outcome: '', outcomeAt: '' },
-    { suggestionId: 'g_demo0003', sessionId: 's_demo0002', clientId: 'c_priya001', clientName: name('c_priya001'), date: d(-3), text: 'Book time with her manager', outcome: '', outcomeAt: '' },
-    { suggestionId: 'g_demo0004', sessionId: 's_demo0002', clientId: 'c_priya001', clientName: name('c_priya001'), date: d(-3), text: 'Write a one-page case for the role', outcome: '', outcomeAt: '' },
-    { suggestionId: 'g_demo0005', sessionId: 's_demo0003', clientId: 'c_samok001', clientName: name('c_samok001'), date: d(-12), text: 'Update LinkedIn headline', outcome: 'not', outcomeAt: STAMP(d(-5)) },
+    { suggestionId: 'g_demo0001', sessionId: 's_demo0001', clientId: 'c_jordan01', clientName: name('c_jordan01'), date: d(-7), text: 'Add two quotes from interview notes', outcome: 'helpful', outcomeAt: STAMP(d(-2)), done: 'yes', doneAt: STAMP(d(-2)) },
+    { suggestionId: 'g_demo0002', sessionId: 's_demo0001', clientId: 'c_jordan01', clientName: name('c_jordan01'), date: d(-7), text: 'Send the draft to Dana by Friday', outcome: '', outcomeAt: '', done: '', doneAt: '' },
+    { suggestionId: 'g_demo0003', sessionId: 's_demo0002', clientId: 'c_priya001', clientName: name('c_priya001'), date: d(-3), text: 'Book time with her manager', outcome: '', outcomeAt: '', done: '', doneAt: '' },
+    { suggestionId: 'g_demo0004', sessionId: 's_demo0002', clientId: 'c_priya001', clientName: name('c_priya001'), date: d(-3), text: 'Write a one-page case for the role', outcome: '', outcomeAt: '', done: '', doneAt: '' },
+    { suggestionId: 'g_demo0005', sessionId: 's_demo0003', clientId: 'c_samok001', clientName: name('c_samok001'), date: d(-12), text: 'Update LinkedIn headline', outcome: 'not', outcomeAt: STAMP(d(-5)), done: 'yes', doneAt: STAMP(d(-5)) },
   ];
 
   const mentors: Mentor[] = [
@@ -61,10 +61,10 @@ export function demoData(today: Date = new Date()): AllData {
   const mname = (id: string) => mentors.find((m) => m.mentorId === id)!.name;
 
   const mentorLinks: MentorLink[] = [
-    { linkId: 'l_demo0001', mentorId: 'm_dana0001', mentorName: mname('m_dana0001'), clientId: 'c_jordan01', clientName: name('c_jordan01'), status: 'introduced', date: d(-5), createdAt: STAMP(d(-7)) },
-    { linkId: 'l_demo0002', mentorId: 'm_dana0001', mentorName: mname('m_dana0001'), clientId: 'c_priya001', clientName: name('c_priya001'), status: 'suggested', date: d(-3), createdAt: STAMP(d(-3)) },
-    { linkId: 'l_demo0003', mentorId: 'm_dana0001', mentorName: mname('m_dana0001'), clientId: 'c_samok001', clientName: name('c_samok001'), status: 'suggested', date: d(-20), createdAt: STAMP(d(-20)) },
-    { linkId: 'l_demo0004', mentorId: 'm_aisha001', mentorName: mname('m_aisha001'), clientId: 'c_samok001', clientName: name('c_samok001'), status: 'introduced', date: d(-10), createdAt: STAMP(d(-12)) },
+    { linkId: 'l_demo0001', mentorId: 'm_dana0001', mentorName: mname('m_dana0001'), clientId: 'c_jordan01', clientName: name('c_jordan01'), status: 'introduced', date: d(-5), createdAt: STAMP(d(-7)), contacted: 'yes' },
+    { linkId: 'l_demo0002', mentorId: 'm_dana0001', mentorName: mname('m_dana0001'), clientId: 'c_priya001', clientName: name('c_priya001'), status: 'suggested', date: d(-3), createdAt: STAMP(d(-3)), contacted: '' },
+    { linkId: 'l_demo0003', mentorId: 'm_dana0001', mentorName: mname('m_dana0001'), clientId: 'c_samok001', clientName: name('c_samok001'), status: 'suggested', date: d(-20), createdAt: STAMP(d(-20)), contacted: '' },
+    { linkId: 'l_demo0004', mentorId: 'm_aisha001', mentorName: mname('m_aisha001'), clientId: 'c_samok001', clientName: name('c_samok001'), status: 'introduced', date: d(-10), createdAt: STAMP(d(-12)), contacted: '' },
   ];
 
   return {
@@ -145,6 +145,7 @@ export function createDemoApi(options: { onAuthError?: (e: ApiError) => void; la
         return upsert(data.suggestions, 'suggestionId', {
           suggestionId: x.suggestionId, text: x.text, sessionId: session.sessionId, clientId: session.clientId,
           clientName: session.clientName, date: session.date, outcome: old?.outcome ?? '', outcomeAt: old?.outcomeAt ?? '',
+          done: old?.done ?? '', doneAt: old?.doneAt ?? '',
         });
       });
       const plan = data.planned.find((p) => p.plannedId === s.plannedId);
@@ -157,6 +158,14 @@ export function createDemoApi(options: { onAuthError?: (e: ApiError) => void; la
       if (!s) throw new ApiError('NOT_FOUND', "That suggestion isn't in your sheet.");
       s.outcome = outcome;
       s.outcomeAt = outcome ? nowIso() : '';
+      return { ...s };
+    },
+    async setSuggestionDone(id, done) {
+      await guard();
+      const s = data.suggestions.find((x) => x.suggestionId === id);
+      if (!s) throw new ApiError('NOT_FOUND', "That suggestion isn't in your sheet.");
+      s.done = done;
+      s.doneAt = done ? nowIso() : '';
       return { ...s };
     },
     async upsertMentor(m) {

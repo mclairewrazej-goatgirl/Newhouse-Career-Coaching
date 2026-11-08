@@ -273,3 +273,14 @@ select.field{appearance:none;background-image:linear-gradient(45deg,transparent 
   .page-title{font-size:2rem}
 }
 @media print{.brand-name{display:none!important}}
+
+/* ---------- did they do it / made contact ---------- */
+.yesno{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.yesno-q{font-size:.875rem;font-weight:600;color:var(--ink-2);min-width:7.5em}
+.goal-item{display:flex;flex-direction:column;gap:6px}
+.goal-text{font-weight:600}
+.carry-btn{align-self:flex-start}
+.carried{color:var(--accent);font-weight:600}
+.tag-done-yes,.tag-contact-yes{background:var(--accent-soft);color:var(--accent);margin-left:0}
+.tag-done-no,.tag-contact-no{background:var(--warn-soft);color:var(--warn-ink);margin-left:0}
+.bullets .tag-done-yes,.bullets .tag-done-no{margin-left:8px}

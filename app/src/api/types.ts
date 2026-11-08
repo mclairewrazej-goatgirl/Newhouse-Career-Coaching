@@ -36,6 +36,8 @@ export interface Session {
 }
 
 export type Outcome = '' | 'helpful' | 'not';
+/** Did it happen? "" = not asked yet. Used for next steps (did the client do it?) and mentor links (did they make contact?). */
+export type YesNo = '' | 'yes' | 'no';
 export interface Suggestion {
   suggestionId: string;
   sessionId: string;
@@ -45,6 +47,8 @@ export interface Suggestion {
   text: string;
   outcome: Outcome;
   outcomeAt: string;
+  done: YesNo;
+  doneAt: string;
 }
 
 export interface Mentor {
@@ -69,6 +73,8 @@ export interface MentorLink {
   status: MentorLinkStatus;
   date: string;
   createdAt: string;
+  /** Did the client make contact with the mentor? */
+  contacted: YesNo;
 }
 
 export interface AllData {
@@ -121,6 +127,7 @@ export interface Api {
   cancelPlanned(plannedId: string): Promise<void>;
   logSession(session: SessionInput, suggestions: SuggestionInput[]): Promise<{ session: Session; suggestions: Suggestion[] }>;
   setSuggestionOutcome(suggestionId: string, outcome: Outcome): Promise<Suggestion>;
+  setSuggestionDone(suggestionId: string, done: YesNo): Promise<Suggestion>;
   upsertMentor(mentor: MentorInput): Promise<Mentor>;
   upsertMentorLink(link: MentorLinkInput): Promise<MentorLink>;
   deleteMentorLink(linkId: string): Promise<void>;

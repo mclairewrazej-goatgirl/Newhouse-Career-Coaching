@@ -7,6 +7,28 @@ coach pastes in new code (see README › *Updating the app later*).
 The version is `CONNECTOR_VERSION` in `apps-script/Config.gs`, and the app
 can read it with the `ping` action.
 
+## 1.2.0 — 2026-11-08
+
+Follow-through on next steps and mentor introductions.
+
+- **Suggestions** gets two columns at the end: `done` ("", yes, no: did the
+  client do it?) and `done_at`. New action `setSuggestionDone`
+  `{suggestion_id, done}` → `{suggestion}`. Logging a session again keeps
+  them, like `outcome`.
+- **MentorLinks** gets `contacted` at the end ("", yes, no: did the client
+  make contact with the mentor?). It's sent with `upsertMentorLink`; if it's
+  left out, the saved value is kept.
+- Sheets made by an earlier version get the new header cells added
+  automatically the first time the app loads (or via **1. Prepare my
+  sheet**). Nothing else in the sheet is changed. Any column you added
+  yourself right after the last column stops this, and the app says which
+  tab to check.
+- Includes 1.1.1 (new app address).
+
+**To update:** paste all `.gs` files (Api, Auth, Config, Data, Menu, Shared)
+over the old ones, **Save**, then **Deploy › Manage deployments › edit ›
+New version**.
+
 ## 1.1.1 — 2026-11-08
 
 - The app moved to `https://mclairewrazej-goatgirl.github.io/Newhouse-Professional-Coaching/`.

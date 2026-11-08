@@ -18,6 +18,7 @@ var ACTIONS_ = {
   cancelPlanned: function (p) { return cancelPlanned_(p); },
   logSession: function (p) { return logSession_(p); },
   setSuggestionOutcome: function (p) { return setSuggestionOutcome_(p); },
+  setSuggestionDone: function (p) { return setSuggestionDone_(p); },
   upsertMentor: function (p) { return upsertMentor_(p); },
   upsertMentorLink: function (p) { return upsertMentorLink_(p); },
   deleteMentorLink: function (p) { return deleteMentorLink_(p); },

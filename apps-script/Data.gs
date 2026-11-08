@@ -76,6 +76,9 @@ function loadTable_(tab) {
   var cols = SCHEMA[tab].columns;
   var lastRow = sheet.getLastRow();
   var header = lastRow >= 1 ? sheet.getRange(1, 1, 1, cols.length).getValues()[0] : [];
+  if (!headersMatch(tab, header) && addMissingColumns_(tab, sheet, header)) {
+    header = sheet.getRange(1, 1, 1, cols.length).getValues()[0];
+  }
   if (!headersMatch(tab, header)) {
     throw apiError_('SERVER', 'The first row of the ' + tab + ' tab has been changed. It should read: ' + headersFor(tab).join(', ') + '.');
   }
@@ -99,6 +102,25 @@ function loadTable_(tab) {
     t.rowNums.push(r + 2);
   }
   return t;
+}
+
+/**
+ * A sheet made by an older connector: append the header cells for columns
+ * added since (e.g. Suggestions.done), formatted like the rest. Leaves
+ * anything else alone. Returns true if it changed the header.
+ */
+function addMissingColumns_(tab, sheet, header) {
+  var missing = missingHeaders(tab, header);
+  if (!missing || !missing.length) return false;
+  var cols = SCHEMA[tab].columns;
+  var first = cols.length - missing.length + 1;
+  sheet.getRange(1, first, 1, missing.length).setValues([missing]).setFontWeight('bold');
+  var formats = rowFormats(tab);
+  var rows = Math.max(sheet.getMaxRows() - 1, 1);
+  for (var c = first; c <= cols.length; c++) {
+    sheet.getRange(2, c, rows, 1).setNumberFormat(formats[c - 1]);
+  }
+  return true;
 }
 
 function find_(t, id) {
@@ -244,6 +266,8 @@ function logSession_(p) {
       s.date = rec.date;
       s.outcome = old ? old.outcome : '';
       s.outcome_at = old ? old.outcome_at : '';
+      s.done = old ? old.done : '';
+      s.done_at = old ? old.done_at : '';
       keep[s.suggestion_id] = true;
       return save_(sTable, s);
     });
@@ -286,6 +310,24 @@ function setSuggestionOutcome_(p) {
   });
 }
 
+/** Did the client do this next step? "" (not asked yet), "yes" or "no". */
+function setSuggestionDone_(p) {
+  var id = requireId_(p.suggestion_id, 'g', 'suggestion_id');
+  var done = p.done === undefined || p.done === null ? '' : p.done;
+  if (['', 'yes', 'no'].indexOf(done) < 0) {
+    throw apiError_('BAD_INPUT', 'done must be "", "yes" or "no".');
+  }
+  return withLock_(function () {
+    var t = loadTable_('Suggestions');
+    var s = find_(t, id);
+    if (!s) throw apiError_('NOT_FOUND', "That suggestion isn't in your sheet.");
+    s.done = done;
+    s.done_at = done ? nowIso_() : '';
+    save_(t, s);
+    return { suggestion: s };
+  });
+}
+
 function upsertMentor_(p) {
   var rec = validated_('Mentors', p.mentor);
   return withLock_(function () {
@@ -304,6 +346,7 @@ function upsertMentor_(p) {
 function upsertMentorLink_(p) {
   var rec = validated_('MentorLinks', p.link);
   var statusGiven = p.link && typeof p.link.status === 'string' && p.link.status !== '';
+  var contactedGiven = p.link && typeof p.link.contacted === 'string';
   return withLock_(function () {
     var mentor = find_(loadTable_('Mentors'), rec.mentor_id);
     if (!mentor) throw apiError_('NOT_FOUND', "That mentor isn't in your sheet.");
@@ -322,6 +365,7 @@ function upsertMentorLink_(p) {
     if (existing) {
       rec.link_id = existing.link_id;
       if (!statusGiven) rec.status = existing.status;
+      if (!contactedGiven) rec.contacted = existing.contacted;
     }
     keepCreatedAt_(rec, existing);
     save_(t, rec);

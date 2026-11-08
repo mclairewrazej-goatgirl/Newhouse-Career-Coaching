@@ -9,7 +9,7 @@
 var APP_URL = 'https://mclairewrazej-goatgirl.github.io/Newhouse-Professional-Coaching/';
 
 /** Bump when the connector changes; returned by the "ping" action. */
-var CONNECTOR_VERSION = '1.1.1';
+var CONNECTOR_VERSION = '1.2.0';
 
 /** Password hashing: salted SHA-256, repeated this many times. */
 var HASH_ITERATIONS = 10000;

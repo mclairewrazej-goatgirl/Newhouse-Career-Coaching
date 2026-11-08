@@ -63,7 +63,7 @@ describe('sessionSuggestions', () => {
   it('returns this session\'s suggestions in next-step order', () => {
     const s = session({ sessionId: 's_1', nextSteps: ['First', 'Second'] });
     const g = (id: string, text: string, sessionId = 's_1'): Suggestion => ({
-      suggestionId: id, sessionId, clientId: 'c_a', clientName: 'A', date: '', text, outcome: '', outcomeAt: '',
+      suggestionId: id, sessionId, clientId: 'c_a', clientName: 'A', date: '', text, outcome: '', outcomeAt: '', done: '', doneAt: '',
     });
     expect(sessionSuggestions(s, [g('g_2', 'Second'), g('g_x', 'Other', 's_2'), g('g_1', 'First')]).map((x) => x.suggestionId))
       .toEqual(['g_1', 'g_2']);

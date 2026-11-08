@@ -5,7 +5,7 @@
  * sheet will hold once the change arrives.
  */
 import type {
-  AllData, Api, Client, ClientInput, Mentor, MentorInput, MentorLink, MentorLinkInput, Outcome, Planned,
+  AllData, Api, Client, YesNo, ClientInput, Mentor, MentorInput, MentorLink, MentorLinkInput, Outcome, Planned,
   PlannedInput, Session, SessionInput, Suggestion, SuggestionInput,
 } from '../api/types';
 
@@ -15,6 +15,7 @@ export type Op =
   | { action: 'cancelPlanned'; plannedId: string }
   | { action: 'logSession'; session: SessionInput; suggestions: SuggestionInput[] }
   | { action: 'setSuggestionOutcome'; suggestionId: string; outcome: Outcome }
+  | { action: 'setSuggestionDone'; suggestionId: string; done: YesNo }
   | { action: 'upsertMentor'; mentor: MentorInput }
   | { action: 'upsertMentorLink'; link: MentorLinkInput }
   | { action: 'deleteMentorLink'; linkId: string };
@@ -26,6 +27,7 @@ export type OpResult =
   | { action: 'cancelPlanned'; plannedId: string }
   | { action: 'logSession'; session: Session; suggestions: Suggestion[] }
   | { action: 'setSuggestionOutcome'; suggestion: Suggestion }
+  | { action: 'setSuggestionDone'; suggestion: Suggestion }
   | { action: 'upsertMentor'; mentor: Mentor }
   | { action: 'upsertMentorLink'; link: MentorLink }
   | { action: 'deleteMentorLink'; linkId: string };
@@ -119,6 +121,7 @@ export function applyOp(d: AllData, op: Op): AllData {
         return {
           suggestionId: s.suggestionId, text: s.text, sessionId: session.sessionId, clientId: session.clientId,
           clientName, date: session.date, outcome: prev?.outcome ?? '', outcomeAt: prev?.outcomeAt ?? '',
+          done: prev?.done ?? '', doneAt: prev?.doneAt ?? '',
         };
       });
       return withSession(d, session, suggestions);
@@ -129,6 +132,14 @@ export function applyOp(d: AllData, op: Op): AllData {
         suggestions: d.suggestions.map((s) =>
           s.suggestionId === op.suggestionId
             ? { ...s, outcome: op.outcome, outcomeAt: op.outcome ? s.outcomeAt || new Date().toISOString() : '' }
+            : s),
+      };
+    case 'setSuggestionDone':
+      return {
+        ...d,
+        suggestions: d.suggestions.map((s) =>
+          s.suggestionId === op.suggestionId
+            ? { ...s, done: op.done, doneAt: op.done ? s.doneAt || new Date().toISOString() : '' }
             : s),
       };
     case 'upsertMentor': {
@@ -151,7 +162,8 @@ export function applyResult(d: AllData, r: OpResult): AllData {
     case 'upsertPlanned': return { ...d, planned: upsertBy(d.planned, 'plannedId', r.planned) };
     case 'cancelPlanned': return applyOp(d, { action: 'cancelPlanned', plannedId: r.plannedId });
     case 'logSession': return withSession(d, r.session, r.suggestions);
-    case 'setSuggestionOutcome': return { ...d, suggestions: upsertBy(d.suggestions, 'suggestionId', r.suggestion) };
+    case 'setSuggestionOutcome':
+    case 'setSuggestionDone': return { ...d, suggestions: upsertBy(d.suggestions, 'suggestionId', r.suggestion) };
     case 'upsertMentor': return withMentor(d, r.mentor);
     case 'upsertMentorLink': return withLink(d, r.link);
     case 'deleteMentorLink': return applyOp(d, { action: 'deleteMentorLink', linkId: r.linkId });
@@ -167,6 +179,8 @@ export async function sendOp(api: Api, op: Op): Promise<OpResult> {
     case 'logSession': return { action: op.action, ...(await api.logSession(op.session, op.suggestions)) };
     case 'setSuggestionOutcome':
       return { action: op.action, suggestion: await api.setSuggestionOutcome(op.suggestionId, op.outcome) };
+    case 'setSuggestionDone':
+      return { action: op.action, suggestion: await api.setSuggestionDone(op.suggestionId, op.done) };
     case 'upsertMentor': return { action: op.action, mentor: await api.upsertMentor(op.mentor) };
     case 'upsertMentorLink': return { action: op.action, link: await api.upsertMentorLink(op.link) };
     case 'deleteMentorLink': await api.deleteMentorLink(op.linkId); return { action: op.action, linkId: op.linkId };

@@ -125,6 +125,9 @@ export function createApiClient(options: ApiClientOptions): Api {
     async setSuggestionOutcome(suggestionId, outcome) {
       return one<Suggestion>(await call('setSuggestionOutcome', { suggestion_id: suggestionId, outcome }), 'suggestion');
     },
+    async setSuggestionDone(suggestionId, done) {
+      return one<Suggestion>(await call('setSuggestionDone', { suggestion_id: suggestionId, done }), 'suggestion');
+    },
     async upsertMentor(mentor) {
       return one<Mentor>(await call('upsertMentor', { mentor: keysToSnake(mentor) }), 'mentor');
     },

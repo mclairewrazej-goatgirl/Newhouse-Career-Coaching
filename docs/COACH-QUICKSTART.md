@@ -66,7 +66,8 @@ computer you use, and sign in.
   the day, tap **Start session**. For a session that wasn't planned, tap
   **Start unbooked session**.
 - **During a session.** Tap **Join Google Meet**, check *Goals for today*
-  (mark each **Helped** / **Didn't help**), then tap **Begin**. Add points
+  (did they do it? did it help? If not done yet, **Carry over to next
+  session** keeps it on the list), then tap **Begin**. Add points
   under *What you covered* and *Next steps*. Connect a mentor if one would
   help. When you're done, tap **End, save & log**, then book the next one.
   [screenshot: live session screen]
@@ -74,7 +75,8 @@ computer you use, and sign in.
   past session and their mentor connections. **Coaching summary (PDF)**
   makes a tidy document to save or send.
   [screenshot: coaching summary preview]
-- **Mentors.** Keep the people you introduce clients to. If someone's been
+- **Mentors.** Keep the people you introduce clients to. On a client's
+  page, mark **Did they make contact?** once you hear back. If someone's been
   connected 3 or more times in 90 days, you'll see a "give them a break"
   warning.
 - **Review.** Look back by week or month, and mark which suggestions
