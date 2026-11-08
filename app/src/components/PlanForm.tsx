@@ -2,10 +2,13 @@ import { useId, useState, type FormEvent } from 'react';
 import type { Client, Planned, PlannedInput } from '../api/types';
 import { isValidDate, isValidTime } from '../shared/connector';
 import { newId, nowIsoWithOffset } from '../shared/ids';
+import { formatTime } from '../shared/clients';
 import { checkMeetLink, defaultStartTime, LENGTH_CHOICES, parseLength } from '../shared/schedule';
 
 interface Props {
   clients: Client[];
+  /** Existing bookings, to warn when the chosen day already has one. */
+  booked?: Planned[];
   /** Editing an existing booking, or planning a new one. */
   existing?: Planned;
   initialDate: string;
@@ -19,7 +22,7 @@ interface Props {
   onCancelBooking?: () => void;
 }
 
-export function PlanForm({ clients, existing, initialDate, initialClientId, initial, title, onSave, onCancel, onCancelBooking }: Props) {
+export function PlanForm({ clients, booked = [], existing, initialDate, initialClientId, initial, title, onSave, onCancel, onCancelBooking }: Props) {
   const id = useId();
   const startLen = existing?.bookedMin ?? initial?.bookedMin ?? 60;
   const [clientId, setClientId] = useState(existing?.clientId ?? initial?.clientId ?? initialClientId ?? '');
@@ -33,6 +36,9 @@ export function PlanForm({ clients, existing, initialDate, initialClientId, init
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const linkCheck = checkMeetLink(link);
+  const sameDay = booked
+    .filter((p) => p.status === 'booked' && p.date === date && p.plannedId !== existing?.plannedId)
+    .sort((a, b) => a.startTime.localeCompare(b.startTime));
   // Keep the booked client in the list even if they've since been archived.
   const choices = clients.filter((c) => c.active || c.clientId === existing?.clientId);
 
@@ -95,6 +101,18 @@ export function PlanForm({ clients, existing, initialDate, initialClientId, init
           {err('time')}
         </div>
       </div>
+
+      {sameDay.length > 0 && (
+        <div className="notice warn" role="status">
+          <p><strong>You already have {sameDay.length === 1 ? 'a session' : `${sameDay.length} sessions`} booked on this day:</strong></p>
+          <ul className="bullets">
+            {sameDay.map((p) => (
+              <li key={p.plannedId}>{p.clientName || clients.find((c) => c.clientId === p.clientId)?.name || 'A client'} at {formatTime(p.startTime)}</li>
+            ))}
+          </ul>
+          <p>You can still book this one.</p>
+        </div>
+      )}
 
       <fieldset className="pills-field">
         <legend className="field-label">Booked for</legend>

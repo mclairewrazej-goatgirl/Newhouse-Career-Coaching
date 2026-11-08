@@ -202,7 +202,7 @@ export function LiveSession({ startFor, onClose, onOpenClient }: Props) {
       <>
         <p className="notice" role="status">Session saved.</p>
         <PlanForm
-          clients={data?.clients ?? []} initialDate={booking.initial.date ?? toDateString(new Date())}
+          clients={data?.clients ?? []} booked={data?.planned ?? []} initialDate={booking.initial.date ?? toDateString(new Date())}
           initial={booking.initial} title="Book the next session?"
           onSave={(p) => { sync.enqueue({ action: 'upsertPlanned', planned: p }); done(); }}
           onCancel={done}

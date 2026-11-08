@@ -76,7 +76,10 @@ export function Schedule({ onOpenClient, planFor, onPlanForHandled }: Props) {
       <div className="page-head">
         <h1 className="display page-title">Schedule</h1>
         {!form && (
-          <button type="button" className="btn-primary" onClick={() => setForm({ mode: 'new' })}>+ Plan a session</button>
+          <div className="head-actions">
+            <button type="button" className="btn-primary" onClick={() => setForm({ mode: 'new' })}>+ Plan a session</button>
+            {!live && <button type="button" className="btn-secondary" onClick={() => nav.startNow()}>Start unbooked session</button>}
+          </div>
         )}
       </div>
       <SyncStatus status={status} compact />
@@ -85,6 +88,7 @@ export function Schedule({ onOpenClient, planFor, onPlanForHandled }: Props) {
         <PlanForm
           key={form.mode === 'edit' ? form.planned.plannedId : 'new'}
           clients={data?.clients ?? []}
+          booked={planned}
           existing={form.mode === 'edit' ? form.planned : undefined}
           initialClientId={form.mode === 'new' ? form.clientId : undefined}
           initialDate={selected < today ? today : selected}
@@ -115,9 +119,6 @@ export function Schedule({ onOpenClient, planFor, onPlanForHandled }: Props) {
             </>
           ) : (
             <p className="muted">Nothing booked. Tap <strong>+ Plan a session</strong> to book one.</p>
-          )}
-          {!live && (
-            <button type="button" className="btn-quiet link-button" onClick={() => nav.startNow()}>Start an unbooked session</button>
           )}
         </section>
       )}
