@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { Planned } from '../api/types';
 import { MonthCalendar } from '../components/MonthCalendar';
 import { PlanForm } from '../components/PlanForm';
+import { Columns } from '../components/Columns';
 import { FirstLoad } from '../components/Skeleton';
 import { SyncStatus } from '../components/SyncStatus';
 import { formatTime, formatWhen, nextBooking } from '../shared/clients';
@@ -72,6 +73,69 @@ export function Schedule({ onOpenClient, planFor, onPlanForHandled }: Props) {
     setForm(null);
   }
 
+  const nextCard = (data && !form && (
+    <section className="card next-card" aria-labelledby="next-up">
+      <h2 id="next-up" className="label">Next up</h2>
+      {next ? (
+        <>
+          <p className="next-name display">{next.clientName}</p>
+          <p className="ink-2">{formatWhen(next, now)} · {formatMinutes(next.bookedMin)}</p>
+          <div className="row">
+            <SessionButton p={next} today={today} liveId={live?.plannedId || null} onOpen={nav.openSession} />
+            <MeetButton link={next.meetLink} primary={next.date !== today} />
+            <button type="button" className="btn-quiet" onClick={() => setForm({ mode: 'edit', planned: next })}>Edit</button>
+          </div>
+        </>
+      ) : (
+        <p className="muted">Nothing booked. Tap <strong>+ Plan a session</strong> to book one.</p>
+      )}
+    </section>
+  ));
+  const calendar = (data && (
+    <MonthCalendar
+      year={view.year} month={view.month} today={today} selected={selected} marks={marks}
+      onSelect={select} onMonth={(year, month) => setView({ year, month })}
+    />
+  ));
+  const dayList = (data && (
+    <section className="stack-sm" aria-labelledby="day-heading">
+      <h2 id="day-heading" className="display section-title">
+        {selected === today ? `Today, ${longDayLabel(selected).split(', ').slice(1).join(', ')}` : longDayLabel(selected)}
+      </h2>
+      {items.booked.length === 0 && items.logged.length === 0 && (
+        <div className="card"><p className="muted">Nothing on this day.</p></div>
+      )}
+      {items.booked.map((p) => (
+        <article key={p.plannedId} className="card day-item">
+          <div className="day-item-main">
+            <span className="dot dot-booked" aria-hidden="true" />
+            <div>
+              <p className="list-title">{p.clientName}</p>
+              <p className="ink-2">{formatTime(p.startTime)} · {formatMinutes(p.bookedMin)}</p>
+            </div>
+          </div>
+          <div className="row">
+            <SessionButton p={p} today={today} liveId={live?.plannedId || null} onOpen={nav.openSession} />
+            <MeetButton link={p.meetLink} />
+            <button type="button" className="btn-quiet" onClick={() => setForm({ mode: 'edit', planned: p })}>Edit</button>
+          </div>
+        </article>
+      ))}
+      {items.logged.map((s) => (
+        <button key={s.sessionId} type="button" className="card day-item day-item-logged" onClick={() => onOpenClient(s.clientId)}>
+          <span className="day-item-main">
+            <span className="dot dot-logged" aria-hidden="true" />
+            <span>
+              <span className="list-title">{s.clientName}</span>
+              <span className="ink-2 block">Logged · {formatMinutes(s.timed ? s.actualMin : s.bookedMin)}</span>
+            </span>
+          </span>
+          <span className="chevron" aria-hidden="true">›</span>
+        </button>
+      ))}
+    </section>
+  ));
+
   return (
     <>
       <div className="page-head">
@@ -105,70 +169,7 @@ export function Schedule({ onOpenClient, planFor, onPlanForHandled }: Props) {
 
       {!data && <FirstLoad label="Loading your schedule…" />}
 
-      {data && !form && (
-        <section className="card next-card" aria-labelledby="next-up">
-          <h2 id="next-up" className="label">Next up</h2>
-          {next ? (
-            <>
-              <p className="next-name display">{next.clientName}</p>
-              <p className="ink-2">{formatWhen(next, now)} · {formatMinutes(next.bookedMin)}</p>
-              <div className="row">
-                <SessionButton p={next} today={today} liveId={live?.plannedId || null} onOpen={nav.openSession} />
-                <MeetButton link={next.meetLink} primary={next.date !== today} />
-                <button type="button" className="btn-quiet" onClick={() => setForm({ mode: 'edit', planned: next })}>Edit</button>
-              </div>
-            </>
-          ) : (
-            <p className="muted">Nothing booked. Tap <strong>+ Plan a session</strong> to book one.</p>
-          )}
-        </section>
-      )}
-
-      {data && (
-        <MonthCalendar
-          year={view.year} month={view.month} today={today} selected={selected} marks={marks}
-          onSelect={select} onMonth={(year, month) => setView({ year, month })}
-        />
-      )}
-
-      {data && (
-        <section className="stack-sm" aria-labelledby="day-heading">
-          <h2 id="day-heading" className="display section-title">
-            {selected === today ? `Today, ${longDayLabel(selected).split(', ').slice(1).join(', ')}` : longDayLabel(selected)}
-          </h2>
-          {items.booked.length === 0 && items.logged.length === 0 && (
-            <div className="card"><p className="muted">Nothing on this day.</p></div>
-          )}
-          {items.booked.map((p) => (
-            <article key={p.plannedId} className="card day-item">
-              <div className="day-item-main">
-                <span className="dot dot-booked" aria-hidden="true" />
-                <div>
-                  <p className="list-title">{p.clientName}</p>
-                  <p className="ink-2">{formatTime(p.startTime)} · {formatMinutes(p.bookedMin)}</p>
-                </div>
-              </div>
-              <div className="row">
-                <SessionButton p={p} today={today} liveId={live?.plannedId || null} onOpen={nav.openSession} />
-                <MeetButton link={p.meetLink} />
-                <button type="button" className="btn-quiet" onClick={() => setForm({ mode: 'edit', planned: p })}>Edit</button>
-              </div>
-            </article>
-          ))}
-          {items.logged.map((s) => (
-            <button key={s.sessionId} type="button" className="card day-item day-item-logged" onClick={() => onOpenClient(s.clientId)}>
-              <span className="day-item-main">
-                <span className="dot dot-logged" aria-hidden="true" />
-                <span>
-                  <span className="list-title">{s.clientName}</span>
-                  <span className="ink-2 block">Logged · {formatMinutes(s.timed ? s.actualMin : s.bookedMin)}</span>
-                </span>
-              </span>
-              <span className="chevron" aria-hidden="true">›</span>
-            </button>
-          ))}
-        </section>
-      )}
+      {data && <Columns left={calendar} right={<>{nextCard}{dayList}</>} phone={<>{nextCard}{calendar}{dayList}</>} />}
     </>
   );
 }

@@ -253,3 +253,23 @@ select.field{appearance:none;background-image:linear-gradient(45deg,transparent 
 .toast{margin:0 auto 8px;width:calc(100% - 32px);max-width:608px;display:flex;align-items:center;gap:8px;justify-content:space-between;background:var(--ink);color:#fff;border-radius:var(--radius-field);padding:8px 8px 8px 14px;font-size:.9375rem;box-shadow:0 4px 16px rgba(0,0,0,.18)}
 .toast-actions{display:flex;gap:4px;flex:none}
 .toast-btn{min-width:44px;min-height:44px;padding:0 10px;background:none;border:0;color:#fff;font-weight:700;text-decoration:underline}
+
+/* ---------- computer layout (keep the width in step with WIDE_QUERY in Columns.tsx) ---------- */
+.brand-name{display:none}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+@media (min-width:960px){
+  .bottom{top:0;bottom:auto;display:flex;flex-direction:column-reverse}
+  .tabbar{border-top:0;border-bottom:1px solid var(--line);padding:0 24px;justify-content:flex-start;gap:4px;align-items:center}
+  .brand-name{display:block;font-weight:700;font-size:1.125rem;color:var(--accent);margin-right:auto;padding-right:24px}
+  .tab{flex:none;max-width:none;min-height:64px;flex-direction:row;gap:8px;padding:0 16px;font-size:.9375rem;border-bottom:3px solid transparent}
+  .tab[aria-current="page"]{border-bottom-color:var(--accent)}
+  .toast{margin:8px auto 0}
+  .shell-main{max-width:760px;padding:96px 32px 48px}
+  .shell-main.page-wide{max-width:1120px}
+  .shell-main.with-live-bar{padding-top:148px;padding-bottom:48px}
+  .page-wide form.card{max-width:640px;width:100%}
+  .stats{grid-template-columns:repeat(4,1fr)}
+  .page-title{font-size:2rem}
+}
+@media print{.brand-name{display:none!important}}

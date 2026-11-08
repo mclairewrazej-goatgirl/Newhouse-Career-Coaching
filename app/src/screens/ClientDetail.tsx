@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Client, Session, Suggestion } from '../api/types';
 import { ClientForm } from '../components/ClientForm';
+import { Columns } from '../components/Columns';
 import { MentorConnections } from '../components/MentorConnections';
 import { clientSessions, clientTotals, formatDay, formatWhen, nextBooking, sessionSuggestions } from '../shared/clients';
 import { toDateString } from '../shared/dates';
@@ -105,6 +106,8 @@ export function ClientDetail({ clientId, onBack, onPlan }: { clientId: string; o
         </header>
       )}
 
+      <Columns
+        left={<>
       <section className="card total-card" aria-labelledby="total-heading">
         <h2 id="total-heading" className="label">Total time in coaching</h2>
         <p className="big-number display">{formatMinutes(totals.actualMin)}</p>
@@ -146,6 +149,8 @@ export function ClientDetail({ clientId, onBack, onPlan }: { clientId: string; o
 
       <MentorConnections clientId={clientId} />
 
+        </>}
+        right={<>
       <section className="stack" aria-labelledby="history-heading">
         <h2 id="history-heading" className="display section-title">Sessions</h2>
         {sessions.length === 0 ? (
@@ -156,6 +161,8 @@ export function ClientDetail({ clientId, onBack, onPlan }: { clientId: string; o
           ))
         )}
       </section>
+        </>}
+      />
     </>
   );
 }

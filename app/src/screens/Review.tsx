@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Columns } from '../components/Columns';
 import { OutcomeToggle } from '../components/OutcomeToggle';
 import { FirstLoad } from '../components/Skeleton';
 import { SyncStatus } from '../components/SyncStatus';
@@ -80,6 +81,8 @@ export function Review() {
         </div>
       </div>
 
+      <Columns
+        left={<>
       <section className="stack-sm" aria-labelledby="sugg-h">
         <h2 id="sugg-h" className="display section-title">Suggestions</h2>
         <div className="chips" role="group" aria-label="Show">
@@ -109,6 +112,8 @@ export function Review() {
         )}
       </section>
 
+        </>}
+        right={<>
       <section className="stack-sm" aria-labelledby="links-h">
         <h2 id="links-h" className="display section-title">Mentor connections</h2>
         {r.links.length === 0 ? (
@@ -131,6 +136,8 @@ export function Review() {
           </ul>
         )}
       </section>
+        </>}
+      />
     </>
   );
 }

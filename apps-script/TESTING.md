@@ -10,7 +10,7 @@ Use a **test** Google Sheet in your own account, never a coach's sheet. This tak
    `Config.gs`, `Shared.gs`, `Auth.gs`, `Data.gs`, `Api.gs`, `Menu.gs`, `Setup.html`.
    Apps Script adds `.gs` itself, so type just `Config`, `Shared`, and so on.
 4. **Project Settings** (gear) › tick **Show "appsscript.json" manifest file in editor**, then paste `appsscript.json` over the one in the editor.
-5. Check `APP_URL` in `Config.gs` is `https://mclairewrazej-goatgirl.github.io/Newhouse-Career-Coaching/`.
+5. Check `APP_URL` in `Config.gs` is `https://mclairewrazej-goatgirl.github.io/Newhouse-Professional-Coaching/`.
 6. Click **Save**. Go back to the sheet tab and refresh it.
 
 ## 2. Menu and Prepare my sheet

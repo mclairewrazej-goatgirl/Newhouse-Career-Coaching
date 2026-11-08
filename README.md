@@ -19,6 +19,7 @@ The app is protected by an **email and password** that the coach chooses. Anyone
 9. [Security: what's protected and what isn't](#security-whats-protected-and-what-isnt)
 10. [What's in the Google Sheet](#whats-in-the-google-sheet)
 11. [Repository layout and local development](#repository-layout-and-local-development)
+12. [Ideas for later](#ideas-for-later-not-in-v1)
 
 ---
 
@@ -62,10 +63,10 @@ You only do this once, no matter how many coaches use the app.
 
 ### A1. Publish the app on GitHub Pages
 
-1. Push this repository to GitHub (e.g. `mclairewrazej-goatgirl/Newhouse-Career-Coaching`).
+1. Push this repository to GitHub (e.g. `mclairewrazej-goatgirl/Newhouse-Professional-Coaching`).
 2. On GitHub: **Settings › Pages › Build and deployment › Source: GitHub Actions**.
 3. Push to `main`. The workflow in `.github/workflows/deploy.yml` builds the app and publishes it.
-4. Your app will be at `https://mclairewrazej-goatgirl.github.io/Newhouse-Career-Coaching/`. Open it. You should see the "This app isn't linked to a sheet yet" screen. That's correct.
+4. Your app will be at `https://mclairewrazej-goatgirl.github.io/Newhouse-Professional-Coaching/`. Open it. You should see the "This app isn't linked to a sheet yet" screen. That's correct.
 
 ### A2. Build the template sheet
 
@@ -87,6 +88,12 @@ You only do this once, no matter how many coaches use the app.
 4. That `/copy` link is what you send to a coach. Opening it shows a "Make a copy" button, and the copy includes the connector.
 
 > Viewers of the template can't see anyone's data. The template is empty, and each coach's copy is private to them.
+
+### A4. Hand off to a coach
+
+1. Do Part B yourself in a second Google account (or with the coach on a call) and note anything confusing.
+2. Add screenshots to [docs/COACH-QUICKSTART.md](docs/COACH-QUICKSTART.md) where it says `[screenshot: …]`.
+3. Send the coach the `/copy` link and the quick start.
 
 ---
 
@@ -346,7 +353,7 @@ Bullet lists are stored one point per line inside the cell, so they stay readabl
 ## Repository layout and local development
 
 ```
-Newhouse-Career-Coaching/
+Newhouse-Professional-Coaching/
 ├── app/                    # The front end (React + Vite + TypeScript, PWA)
 │   ├── src/
 │   └── vite.config.ts
@@ -364,7 +371,6 @@ Newhouse-Career-Coaching/
 ├── docs/COACH-QUICKSTART.md  # one-page setup and daily-use guide for the coach
 ├── CHANGELOG.md            # what changed in each connector version
 ├── CLAUDE.md               # context for Claude Code
-├── WORKPLAN.md             # phased build plan
 └── README.md
 ```
 
@@ -389,3 +395,14 @@ clasp push
 ```
 
 Use clasp only against **your own test copy**, never a coach's sheet.
+
+---
+
+## Ideas for later (not in v1)
+
+- Create the Google Calendar event and Meet link automatically when booking (needs Calendar permission in the connector).
+- Email reminder the morning of a session.
+- Save the coaching summary PDF straight to the coach's Google Drive (needs Drive permission in the connector).
+- "Suggest a mentor" shortcut inside the live session screen.
+- Mentor-side view: which clients actually followed up, and whether the intro went well.
+- Multiple coaches sharing one sheet with separate logins.
