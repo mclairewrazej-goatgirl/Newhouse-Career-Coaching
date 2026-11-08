@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { MentorForm } from '../components/MentorForm';
+import { FirstLoad } from '../components/Skeleton';
 import { SyncStatus } from '../components/SyncStatus';
 import { formatDay } from '../shared/clients';
 import { latestLink, needsBreak, recentUseCount, STATUS_SHORT, usageLabel } from '../shared/mentors';
@@ -13,7 +14,7 @@ interface Props {
 
 export function Mentors({ openId, onOpen }: Props) {
   const { sync } = useApp();
-  const { data, status, loading } = useSync();
+  const { data, status } = useSync();
   const [adding, setAdding] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const now = new Date();
@@ -63,7 +64,7 @@ export function Mentors({ openId, onOpen }: Props) {
         />
       )}
 
-      {!data && loading && <p className="muted" role="status">Loading your mentors…</p>}
+      {!data && <FirstLoad label="Loading your mentors…" />}
       {data && active.length === 0 && !adding && (
         <div className="card">
           <p className="muted">No mentors yet. Tap <strong>+ Add mentor</strong> to add people you can connect clients with.</p>

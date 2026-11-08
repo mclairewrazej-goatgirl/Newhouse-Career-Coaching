@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import type { Planned } from '../api/types';
+import { FailedToast } from '../components/Toast';
 import { useApp, useSync } from '../state/AppContext';
 import { liveFromPlanned, useLive } from '../state/live';
 import { NavContext, type Nav, type Tab } from '../state/nav';
@@ -96,6 +97,7 @@ export function AppShell() {
       <div className="shell">
         <main className={`shell-main${live && !liveView.open ? ' with-live-bar' : ''}`}>{main}</main>
         <div className="bottom">
+          <FailedToast onDetails={() => nav.go('account')} />
           {live && !liveView.open && <LiveBar live={live} onOpen={nav.openLive} />}
           <nav className="tabbar" aria-label="Main">
             {TABS.map((t) => (

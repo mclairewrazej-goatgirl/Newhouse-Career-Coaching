@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { OutcomeToggle } from '../components/OutcomeToggle';
+import { FirstLoad } from '../components/Skeleton';
 import { SyncStatus } from '../components/SyncStatus';
 import { formatDay } from '../shared/clients';
 import { STATUS_SHORT } from '../shared/mentors';
@@ -17,7 +18,7 @@ const FILTERS: { id: OutcomeFilter; label: string }[] = [
 
 /** Week or month at a glance, and a place to mark which suggestions helped. */
 export function Review() {
-  const { data, status, loading } = useSync();
+  const { data, status } = useSync();
   const nav = useNav();
   const [kind, setKind] = useState<PeriodKind>('week');
   const [offset, setOffset] = useState(0);
@@ -32,7 +33,7 @@ export function Review() {
     return (
       <>
         <h1 className="display page-title">Review</h1>
-        {loading && <p className="muted" role="status">Loading…</p>}
+        <FirstLoad label="Loading your review…" />
       </>
     );
   }
