@@ -1,0 +1,9 @@
+:root{
+  --bg:#F5F4EF; --surface:#FFFFFF; --ink:#1B1F1E; --ink-2:#3E4441; --muted:#5C625F;
+  --line:#E2E0D8; --field-line:#CFCCC2;
+  --accent:#1F5E57; --accent-soft:#E3EEEC; --accent-on:#FFFFFF;
+  --warn:#9A4F12; --warn-soft:#FBEFE3; --warn-ink:#7A3D0C; --error:#A3261B;
+  --prep-bg:#FBF7EE; --prep-line:#EADFC6; --logged-dot:#A9A79E;
+  --radius-card:16px; --radius-field:12px;
+  --font-body:Inter,system-ui,sans-serif; --font-display:"Space Grotesk",sans-serif;
+}
