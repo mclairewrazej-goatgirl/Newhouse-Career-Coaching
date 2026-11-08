@@ -68,7 +68,11 @@ Response: `{ok:true, data}` or `{ok:false, error:{code:"AUTH"|"LOCKED"|"BAD_INPU
 | upsertMentorLink | `{link}` (one row per mentor+client; upsert by that pair) | `{link}` |
 | deleteMentorLink | `{link_id}` | `{}` |
 
-Front-end types use camelCase; map to snake_case columns in one place.
+On the wire, records use the sheet's snake_case column names; bullet columns (`covered`, `next_steps`) are string arrays. Upserts send the whole record. The connector fills `*_name` columns, `created_at` if missing, and on Suggestions `session_id`/`client_id`/`client_name`/`date`/`outcome`/`outcome_at`; use the record it returns (e.g. `upsertMentorLink` returns the existing `link_id` for that mentor+client pair).
+
+Front-end types use camelCase; map to snake_case columns in one place (`src/api/`).
+
+Connector pure logic lives in `apps-script/Shared.gs` and is mirrored in `app/src/shared/connector.ts`; `connector.test.ts` runs the same tests against both, so change them together.
 
 ## Demo sample data (for VITE_DEMO=1)
 Clients: Jordan Reyes (Moving from teaching into UX research), Priya Nair (Negotiating a promotion to team lead), Sam Okafor (Returning to work after a career break), plus one archived client. A few planned sessions this week and 2–3 logged sessions with bullets and some rated suggestions. Mentors: Dana Lee (UX Research Lead, Northfield Digital — 3 connections in 90 days, to show the warning), Marcus Chen (Director of Operations, Bow Valley Health), Aisha Rahman (HR Business Partner, Calder & Ruiz), all with example.com emails and 555 phone numbers. Mirror the Design demo.
