@@ -1,76 +1,80 @@
-import { useId, useState, type FormEvent } from 'react';
-import { newId, nowIsoWithOffset } from '../shared/ids';
-import { useApp, useSync } from '../state/AppContext';
+import { useMemo, useState } from 'react';
+import { ClientForm } from '../components/ClientForm';
 import { SyncStatus } from '../components/SyncStatus';
+import { clientTotals, formatWhen, nextBooking, sortClients } from '../shared/clients';
+import { newId, nowIsoWithOffset } from '../shared/ids';
+import { formatMinutes } from '../shared/minutes';
+import { useApp, useSync } from '../state/AppContext';
+import { ClientDetail } from './ClientDetail';
 
-/** Phase 3 version: the client list and "+ Add client", enough to see syncing work. Phase 4 builds the rest. */
 export function Clients() {
   const { sync } = useApp();
   const { data, status, loading } = useSync();
   const [adding, setAdding] = useState(false);
-  const [name, setName] = useState('');
-  const [focus, setFocus] = useState('');
-  const [error, setError] = useState('');
-  const errorId = useId();
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [showArchived, setShowArchived] = useState(false);
 
-  const clients = (data?.clients ?? []).filter((c) => c.active).sort((a, b) => a.name.localeCompare(b.name));
+  const now = new Date();
+  const all = useMemo(() => sortClients(data?.clients ?? []), [data]);
+  const active = all.filter((c) => c.active);
+  const archived = all.filter((c) => !c.active);
 
-  function save(e: FormEvent) {
-    e.preventDefault();
-    if (!name.trim()) {
-      setError('Enter a name.');
-      return;
-    }
-    sync.enqueue({
-      action: 'upsertClient',
-      client: { clientId: newId('c'), name: name.trim(), focus: focus.trim(), active: true, createdAt: nowIsoWithOffset() },
-    });
-    setName('');
-    setFocus('');
-    setError('');
+  if (openId && data?.clients.some((c) => c.clientId === openId)) {
+    return <ClientDetail clientId={openId} onBack={() => setOpenId(null)} />;
+  }
+
+  function add(name: string, focus: string) {
+    const clientId = newId('c');
+    sync.enqueue({ action: 'upsertClient', client: { clientId, name, focus, active: true, createdAt: nowIsoWithOffset() } });
     setAdding(false);
   }
+
+  const row = (c: (typeof all)[number]) => {
+    const totals = clientTotals(c.clientId, data?.sessions ?? []);
+    const next = nextBooking(c.clientId, data?.planned ?? [], now);
+    return (
+      <li key={c.clientId}>
+        <button type="button" className="list-button" onClick={() => setOpenId(c.clientId)}>
+          <span className="list-main">
+            <span className="list-title">{c.name}</span>
+            {c.focus && <span className="muted">{c.focus}</span>}
+            {c.active && (
+              <span className="list-meta">
+                {next ? `Next: ${formatWhen(next, now)}` : 'No session booked'}
+              </span>
+            )}
+          </span>
+          <span className="list-side" aria-label={`${formatMinutes(totals.actualMin)} coached`}>
+            {formatMinutes(totals.actualMin)}
+          </span>
+        </button>
+      </li>
+    );
+  };
 
   return (
     <>
       <div className="page-head">
         <h1 className="display page-title">Clients</h1>
-        {!adding && (
-          <button type="button" className="btn-primary" onClick={() => setAdding(true)}>+ Add client</button>
-        )}
+        {!adding && <button type="button" className="btn-primary" onClick={() => setAdding(true)}>+ Add client</button>}
       </div>
       <SyncStatus status={status} compact />
 
-      {adding && (
-        <form className="card stack-sm" onSubmit={save} noValidate>
-          <label className="field-label" htmlFor="client-name">Name</label>
-          <input
-            id="client-name" className="field" value={name} onChange={(e) => setName(e.target.value)} autoFocus
-            aria-invalid={!!error} aria-describedby={error ? errorId : undefined}
-          />
-          {error && <p id={errorId} className="field-error">{error}</p>}
-          <label className="field-label" htmlFor="client-focus">Coaching focus <span className="muted">(optional)</span></label>
-          <input id="client-focus" className="field" value={focus} onChange={(e) => setFocus(e.target.value)} />
-          <div className="row">
-            <button type="submit" className="btn-primary">Save client</button>
-            <button type="button" className="btn-quiet" onClick={() => { setAdding(false); setError(''); }}>Cancel</button>
-          </div>
-        </form>
-      )}
+      {adding && <ClientForm submitLabel="Save client" onSave={add} onCancel={() => setAdding(false)} />}
 
       {!data && loading && <p className="muted" role="status">Loading your clients…</p>}
-      {data && clients.length === 0 && !adding && (
+      {data && active.length === 0 && !adding && (
         <div className="card"><p className="muted">No clients yet. Tap <strong>+ Add client</strong> to add your first.</p></div>
       )}
-      {clients.length > 0 && (
-        <ul className="list card">
-          {clients.map((c) => (
-            <li key={c.clientId}>
-              <span className="list-title">{c.name}</span>
-              {c.focus && <span className="muted">{c.focus}</span>}
-            </li>
-          ))}
-        </ul>
+      {active.length > 0 && <ul className="list card" aria-label="Clients">{active.map(row)}</ul>}
+
+      {archived.length > 0 && (
+        <>
+          <button type="button" className="btn-quiet" aria-expanded={showArchived} onClick={() => setShowArchived((v) => !v)}>
+            {showArchived ? 'Hide archived clients' : `Show archived clients (${archived.length})`}
+          </button>
+          {showArchived && <ul className="list card" aria-label="Archived clients">{archived.map(row)}</ul>}
+        </>
       )}
     </>
   );
