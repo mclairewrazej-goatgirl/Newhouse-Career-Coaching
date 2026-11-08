@@ -40,6 +40,11 @@ describe('parseResponse', () => {
     expect(() => parseResponse('<html>Sign in to Google</html>')).toThrow(expect.objectContaining({ code: 'SERVER' }));
     expect(() => parseResponse('null')).toThrow(expect.objectContaining({ code: 'SERVER' }));
   });
+  it('explains an action the sheet is too old to know', () => {
+    expect(() => parseResponse('{"ok":false,"error":{"code":"BAD_INPUT","message":"Unknown action."}}')).toThrow(
+      expect.objectContaining({ code: 'BAD_INPUT', message: MESSAGES.outdated }),
+    );
+  });
 });
 
 describe('createApiClient', () => {

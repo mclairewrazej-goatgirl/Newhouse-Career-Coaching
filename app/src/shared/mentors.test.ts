@@ -6,7 +6,7 @@ import {
 
 const link = (over: Partial<MentorLink>): MentorLink => ({
   linkId: 'l_x', mentorId: 'm_dana', mentorName: 'Dana', clientId: 'c_a', clientName: 'A', status: 'suggested',
-  date: '2026-11-01', createdAt: '', contacted: '', ...over,
+  date: '2026-11-01', createdAt: '', contacted: '', contactedOn: '', ...over,
 });
 
 describe('recent use (90-day window)', () => {

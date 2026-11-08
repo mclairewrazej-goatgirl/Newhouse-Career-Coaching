@@ -40,7 +40,7 @@ export function allDataFromWire(data: Json): AllData {
     sessions: list<Session>(data.sessions),
     suggestions: list<Suggestion>(data.suggestions).map((s) => ({ ...s, done: s.done ?? '', doneAt: s.doneAt ?? '' })),
     mentors: list<Mentor>(data.mentors),
-    mentorLinks: list<MentorLink>(data.mentorLinks).map((l) => ({ ...l, contacted: l.contacted ?? '' })),
+    mentorLinks: list<MentorLink>(data.mentorLinks).map((l) => ({ ...l, contacted: l.contacted ?? '', contactedOn: l.contactedOn ?? '' })),
     sheetUrl: typeof data.sheetUrl === 'string' ? data.sheetUrl : '',
     sheetName: typeof data.sheetName === 'string' ? data.sheetName : '',
   };

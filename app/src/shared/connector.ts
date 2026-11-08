@@ -118,6 +118,7 @@ export const SCHEMA: Record<TabName, { key: string; columns: Column[] }> = {
       { name: 'date', type: 'date', required: true },
       { name: 'created_at', type: 'timestamp' },
       { name: 'contacted', type: 'enum', values: ['', 'yes', 'no'], added: '1.2.0' },
+      { name: 'contacted_on', type: 'date', added: '1.3.0' },
     ],
   },
 };

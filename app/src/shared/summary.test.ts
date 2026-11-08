@@ -23,9 +23,9 @@ function data(): AllData {
       { mentorId: 'm_n', name: 'Not linked', role: '', organization: '', email: '', phone: '', notes: '', active: true, createdAt: '' },
     ],
     mentorLinks: [
-      { linkId: 'l_1', mentorId: 'm_z', mentorName: 'Zed', clientId: 'c_a', clientName: 'Ann', status: 'suggested', date: '2026-10-01', createdAt: '', contacted: '' },
-      { linkId: 'l_2', mentorId: 'm_b', mentorName: 'Bea', clientId: 'c_a', clientName: 'Ann', status: 'introduced', date: '2026-10-02', createdAt: '', contacted: '' },
-      { linkId: 'l_3', mentorId: 'm_n', mentorName: 'Not linked', clientId: 'c_other', clientName: 'O', status: 'suggested', date: '2026-10-02', createdAt: '', contacted: '' },
+      { linkId: 'l_1', mentorId: 'm_z', mentorName: 'Zed', clientId: 'c_a', clientName: 'Ann', status: 'suggested', date: '2026-10-01', createdAt: '', contacted: '', contactedOn: '' },
+      { linkId: 'l_2', mentorId: 'm_b', mentorName: 'Bea', clientId: 'c_a', clientName: 'Ann', status: 'introduced', date: '2026-10-02', createdAt: '', contacted: '', contactedOn: '' },
+      { linkId: 'l_3', mentorId: 'm_n', mentorName: 'Not linked', clientId: 'c_other', clientName: 'O', status: 'suggested', date: '2026-10-02', createdAt: '', contacted: '', contactedOn: '' },
     ],
   };
 }

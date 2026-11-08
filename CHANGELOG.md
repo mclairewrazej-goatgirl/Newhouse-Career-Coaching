@@ -7,6 +7,17 @@ coach pastes in new code (see README › *Updating the app later*).
 The version is `CONNECTOR_VERSION` in `apps-script/Config.gs`, and the app
 can read it with the `ping` action.
 
+## 1.3.0 — 2026-11-08
+
+- **MentorLinks** gets `contacted_on` at the end: the date the client made
+  contact with the mentor. Sent with `upsertMentorLink`; if it's left out, the
+  saved date is kept. It's cleared whenever `contacted` isn't yes.
+- The new header cell is added automatically, like in 1.2.0.
+
+**To update:** paste all `.gs` files (Api, Auth, Config, Data, Menu, Shared)
+over the old ones, **Save**, then **Deploy › Manage deployments › edit ›
+New version**.
+
 ## 1.2.0 — 2026-11-08
 
 Follow-through on next steps and mentor introductions.

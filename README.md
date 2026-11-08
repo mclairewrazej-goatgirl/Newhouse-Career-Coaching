@@ -237,6 +237,7 @@ Forgot your password? Same steps. You don't need the old one.
 | Finish setup says the address is wrong | It must start with `https://script.google.com/macros/s/` and end with `/exec`. If it ends in `/dev`, you copied the test address: redo B3. |
 | App says "This app isn't linked to a sheet yet" | Open your **personal app link** once on that device (from the sheet: **Coaching Tracker › Show my app link**). |
 | "Wrong email or password" | Check for typos and capital letters. After 5 wrong tries, sign-in pauses for 15 minutes. Reset it from the sheet if needed. |
+| "Your sheet needs an update before this can be saved" (or "Unknown action") | The sheet's script is older than the app. Follow [Updating the app later](#updating-the-app-later), then tap **OK** on the Account tab to clear the message. |
 | "Can't reach your sheet" | Check your internet. If it continues, open **Extensions › Apps Script › Deploy › Manage deployments** and make sure the deployment exists and "Who has access" is **Anyone**. |
 | Sessions stuck as "waiting to sync" | Open the Account tab and tap **Sync now**. If it fails, sign out and back in. |
 | App stopped working after a connector update | You probably made a *New deployment*. Go back to **Manage deployments**, edit the original one, and choose **New version**. Or run **Finish setup** again with the new address and re-open the new personal link on each device. |
@@ -349,6 +350,7 @@ Bullet lists are stored one point per line inside the cell, so they stay readabl
 | `date` | 2026-11-03 (when the status was last set) |
 | `created_at` | … |
 | `contacted` | yes / no / (blank) — did the client make contact with the mentor? |
+| `contacted_on` | date they made contact (blank if not recorded) |
 
 > Mentor contact details are about people who aren't your clients. Only store what they've agreed to share, and keep the sheet private.
 
