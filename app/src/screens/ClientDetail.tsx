@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import type { Client, Session, Suggestion } from '../api/types';
 import { ClientForm } from '../components/ClientForm';
+import { MentorConnections } from '../components/MentorConnections';
 import { clientSessions, clientTotals, formatDay, formatWhen, nextBooking, sessionSuggestions } from '../shared/clients';
+import { toDateString } from '../shared/dates';
 import { formatMinutes } from '../shared/minutes';
 import { useApp, useSync } from '../state/AppContext';
+import { useLive } from '../state/live';
+import { useNav } from '../state/nav';
 
 const OUTCOME_LABEL: Record<Suggestion['outcome'], string> = { '': '', helpful: 'Helped', not: "Didn't help" };
 
@@ -44,8 +48,10 @@ function SessionCard({ session, suggestions, now }: { session: Session; suggesti
 }
 
 export function ClientDetail({ clientId, onBack, onPlan }: { clientId: string; onBack: () => void; onPlan: () => void }) {
-  const { sync } = useApp();
+  const { sync, live: liveStore } = useApp();
   const { data } = useSync();
+  const nav = useNav();
+  const live = useLive(liveStore);
   const [editing, setEditing] = useState(false);
   const client = data?.clients.find((c) => c.clientId === clientId);
   if (!data || !client) return null;
@@ -107,6 +113,11 @@ export function ClientDetail({ clientId, onBack, onPlan }: { clientId: string; o
           {next ? (
             <>
               <p className="value"><strong>{formatWhen(next, now)}</strong> · {formatMinutes(next.bookedMin)}</p>
+              {(live?.plannedId === next.plannedId || (!live && next.date === toDateString(now))) && (
+                <button type="button" className="btn-primary link-button" onClick={() => nav.openSession(next)}>
+                  {live ? 'Open session' : 'Start session'}
+                </button>
+              )}
               {next.meetLink && (
                 <a className="btn-secondary link-button" href={next.meetLink} target="_blank" rel="noopener noreferrer">
                   Join Google Meet
@@ -119,8 +130,15 @@ export function ClientDetail({ clientId, onBack, onPlan }: { clientId: string; o
               <button type="button" className="btn-primary link-button" onClick={onPlan}>+ Plan a session</button>
             </>
           )}
+          {live?.clientId === clientId && live.plannedId !== next?.plannedId ? (
+            <button type="button" className="btn-secondary link-button" onClick={nav.openLive}>Open session in progress</button>
+          ) : !live && (
+            <button type="button" className="btn-quiet link-button" onClick={() => nav.startNow(clientId)}>Start an unbooked session</button>
+          )}
         </section>
       )}
+
+      <MentorConnections clientId={clientId} />
 
       <section className="stack" aria-labelledby="history-heading">
         <h2 id="history-heading" className="display section-title">Sessions</h2>

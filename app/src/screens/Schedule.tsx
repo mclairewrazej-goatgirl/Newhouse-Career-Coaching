@@ -8,6 +8,8 @@ import { toDateString } from '../shared/dates';
 import { formatMinutes } from '../shared/minutes';
 import { dayItems, dayMarks, longDayLabel } from '../shared/schedule';
 import { useApp, useSync } from '../state/AppContext';
+import { useLive } from '../state/live';
+import { useNav } from '../state/nav';
 
 interface Props {
   onOpenClient: (clientId: string) => void;
@@ -27,18 +29,27 @@ function MeetButton({ link, primary = false }: { link: string; primary?: boolean
   );
 }
 
+/** "Open session" for a booking that is running now, "Start session" for one on today. */
+function SessionButton({ p, today, liveId, onOpen }: { p: Planned; today: string; liveId: string | null; onOpen: (p: Planned) => void }) {
+  if (liveId === p.plannedId) return <button type="button" className="btn-primary" onClick={() => onOpen(p)}>Open session</button>;
+  if (p.date !== today) return null;
+  return <button type="button" className="btn-primary" onClick={() => onOpen(p)}>Start session</button>;
+}
+
 export function Schedule({ onOpenClient, planFor, onPlanForHandled }: Props) {
-  const { sync } = useApp();
+  const { sync, live: liveStore } = useApp();
   const { data, status, loading } = useSync();
+  const nav = useNav();
+  const live = useLive(liveStore);
   const now = new Date();
   const today = toDateString(now);
   const [selected, setSelected] = useState(today);
   const [view, setView] = useState({ year: now.getFullYear(), month: now.getMonth() });
-  const [form, setForm] = useState<FormState>(planFor ? { mode: 'new', clientId: planFor } : null);
+  const [form, setForm] = useState<FormState>(planFor != null ? { mode: 'new', clientId: planFor || undefined } : null);
 
   // The request to plan for a client has been taken into the form; clear it so it isn't reused.
   useEffect(() => {
-    if (planFor) onPlanForHandled?.();
+    if (planFor != null) onPlanForHandled?.();
   }, [planFor, onPlanForHandled]);
 
   const planned = useMemo(() => data?.planned ?? [], [data]);
@@ -97,12 +108,16 @@ export function Schedule({ onOpenClient, planFor, onPlanForHandled }: Props) {
               <p className="next-name display">{next.clientName}</p>
               <p className="ink-2">{formatWhen(next, now)} · {formatMinutes(next.bookedMin)}</p>
               <div className="row">
-                <MeetButton link={next.meetLink} primary />
+                <SessionButton p={next} today={today} liveId={live?.plannedId || null} onOpen={nav.openSession} />
+                <MeetButton link={next.meetLink} primary={next.date !== today} />
                 <button type="button" className="btn-quiet" onClick={() => setForm({ mode: 'edit', planned: next })}>Edit</button>
               </div>
             </>
           ) : (
             <p className="muted">Nothing booked. Tap <strong>+ Plan a session</strong> to book one.</p>
+          )}
+          {!live && (
+            <button type="button" className="btn-quiet link-button" onClick={() => nav.startNow()}>Start an unbooked session</button>
           )}
         </section>
       )}
@@ -132,6 +147,7 @@ export function Schedule({ onOpenClient, planFor, onPlanForHandled }: Props) {
                 </div>
               </div>
               <div className="row">
+                <SessionButton p={p} today={today} liveId={live?.plannedId || null} onOpen={nav.openSession} />
                 <MeetButton link={p.meetLink} />
                 <button type="button" className="btn-quiet" onClick={() => setForm({ mode: 'edit', planned: p })}>Edit</button>
               </div>

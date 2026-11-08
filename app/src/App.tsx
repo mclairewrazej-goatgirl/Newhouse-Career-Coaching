@@ -5,6 +5,7 @@ import type { Api, LoginResult } from './api/types';
 import { AppContext } from './state/AppContext';
 import type { SessionStore, Stage } from './state/session';
 import type { KeyValueStore } from './state/storage';
+import { LiveStore } from './state/live';
 import { SyncEngine } from './state/sync';
 import { AppShell } from './screens/AppShell';
 import { NotLinked } from './screens/NotLinked';
@@ -38,6 +39,7 @@ export function App({ store, kv, demo, badLink }: Props) {
   }, [demo, store]);
 
   const sync = useMemo(() => (api ? new SyncEngine({ api, store: kv }) : null), [api, kv]);
+  const live = useMemo(() => new LiveStore(kv), [kv]);
 
   // Load from the sheet when signed in, when the app comes back into view, and send waiting changes when back online.
   useEffect(() => {
@@ -76,19 +78,21 @@ export function App({ store, kv, demo, badLink }: Props) {
       );
       if (!ok) return;
     }
+    if (live.get() && !window.confirm('A session is still in progress. Signing out will discard its timer and notes. Sign out anyway?')) return;
     try { await api?.logout(); } catch { /* signing out on this device is what matters */ }
     sync?.clear();
+    live.clear();
     store.signOut();
     setNotice('');
     setStage('signin');
-  }, [api, store, sync]);
+  }, [api, store, sync, live]);
 
   if (!api || !sync || stage === 'unlinked') return <NotLinked badLink={badLink} />;
   if (stage === 'signin') {
     return <SignIn api={api} demo={demo} initialEmail={store.email() ?? ''} notice={notice} onSignedIn={onSignedIn} />;
   }
   return (
-    <AppContext.Provider value={{ api, sync, demo, email: store.email() ?? '', signOut }}>
+    <AppContext.Provider value={{ api, sync, live, demo, email: store.email() ?? '', signOut }}>
       <AppShell />
     </AppContext.Provider>
   );

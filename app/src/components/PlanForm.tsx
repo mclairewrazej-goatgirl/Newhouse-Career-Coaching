@@ -10,23 +10,26 @@ interface Props {
   existing?: Planned;
   initialDate: string;
   initialClientId?: string;
+  /** Pre-fill for a new booking (e.g. "book the next session"). */
+  initial?: Partial<PlannedInput>;
+  title?: string;
   onSave: (planned: PlannedInput) => void;
   onCancel: () => void;
   /** Cancel the booking itself (only when editing). */
   onCancelBooking?: () => void;
 }
 
-export function PlanForm({ clients, existing, initialDate, initialClientId, onSave, onCancel, onCancelBooking }: Props) {
+export function PlanForm({ clients, existing, initialDate, initialClientId, initial, title, onSave, onCancel, onCancelBooking }: Props) {
   const id = useId();
-  const startLen = existing?.bookedMin ?? 60;
-  const [clientId, setClientId] = useState(existing?.clientId ?? initialClientId ?? '');
-  const [date, setDate] = useState(existing?.date ?? initialDate);
-  const [time, setTime] = useState(existing?.startTime ?? defaultStartTime(new Date()));
+  const startLen = existing?.bookedMin ?? initial?.bookedMin ?? 60;
+  const [clientId, setClientId] = useState(existing?.clientId ?? initial?.clientId ?? initialClientId ?? '');
+  const [date, setDate] = useState(existing?.date ?? initial?.date ?? initialDate);
+  const [time, setTime] = useState(existing?.startTime ?? initial?.startTime ?? defaultStartTime(new Date()));
   const [length, setLength] = useState<number | 'custom'>(
     (LENGTH_CHOICES as readonly number[]).includes(startLen) ? startLen : 'custom',
   );
   const [custom, setCustom] = useState((LENGTH_CHOICES as readonly number[]).includes(startLen) ? '' : String(startLen));
-  const [link, setLink] = useState(existing?.meetLink ?? '');
+  const [link, setLink] = useState(existing?.meetLink ?? initial?.meetLink ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const linkCheck = checkMeetLink(link);
@@ -62,7 +65,7 @@ export function PlanForm({ clients, existing, initialDate, initialClientId, onSa
 
   return (
     <form className="card stack-sm" onSubmit={submit} noValidate aria-label={existing ? 'Edit session' : 'Plan a session'}>
-      <h2 className="display section-title">{existing ? 'Edit session' : 'Plan a session'}</h2>
+      <h2 className="display section-title">{title ?? (existing ? 'Edit session' : 'Plan a session')}</h2>
 
       <label className="field-label" htmlFor={`${id}-client`}>Client</label>
       <select
@@ -131,7 +134,7 @@ export function PlanForm({ clients, existing, initialDate, initialClientId, onSa
 
       <div className="row">
         <button type="submit" className="btn-primary">{existing ? 'Save changes' : 'Book session'}</button>
-        <button type="button" className="btn-quiet" onClick={onCancel}>{existing ? 'Close' : 'Cancel'}</button>
+        <button type="button" className="btn-quiet" onClick={onCancel}>{existing ? 'Close' : initial ? 'Not now' : 'Cancel'}</button>
       </div>
       {existing && onCancelBooking && (
         <button type="button" className="btn-danger" onClick={onCancelBooking}>Cancel this session</button>
