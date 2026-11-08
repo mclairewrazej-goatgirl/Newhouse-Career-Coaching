@@ -4,6 +4,7 @@
  */
 import { isConnectorAddress } from '../shared/connector';
 import type { KeyValueStore } from './storage';
+import { SYNC_KEYS } from './sync';
 
 export const KEYS = {
   connector: 'ct.connector',
@@ -34,6 +35,8 @@ export function createSessionStore(store: KeyValueStore, now: () => number = Dat
     link(address) {
       if (store.get(KEYS.connector) !== address) {
         self.signOut();
+        // A different sheet: the saved copy and waiting changes belong to the old one.
+        Object.values(SYNC_KEYS).forEach((k) => store.remove(k));
         store.set(KEYS.connector, address);
       }
     },

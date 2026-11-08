@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { Account } from './Account';
+import { Clients } from './Clients';
 
 export type Tab = 'schedule' | 'clients' | 'account';
 
@@ -34,7 +35,7 @@ export function AppShell() {
     <div className="shell">
       <main className="shell-main">
         {tab === 'schedule' && <Placeholder title="Schedule" text="Your planned and logged sessions will show here." />}
-        {tab === 'clients' && <Placeholder title="Clients" text="Your clients will show here." />}
+        {tab === 'clients' && <Clients />}
         {tab === 'account' && <Account />}
       </main>
       <nav className="tabbar" aria-label="Main">

@@ -117,7 +117,11 @@ export function createDemoApi(options: { onAuthError?: (e: ApiError) => void; la
     async getAll() { await guard(); return structuredClone(data); },
     async upsertClient(c) {
       await guard();
-      return upsert(data.clients, 'clientId', { ...c, createdAt: c.createdAt || nowIso() });
+      const saved = upsert(data.clients, 'clientId', { ...c, createdAt: c.createdAt || nowIso() });
+      for (const rows of [data.planned, data.sessions, data.suggestions, data.mentorLinks]) {
+        for (const r of rows) if (r.clientId === c.clientId) r.clientName = c.name;
+      }
+      return saved;
     },
     async upsertPlanned(p) {
       await guard();
@@ -157,7 +161,9 @@ export function createDemoApi(options: { onAuthError?: (e: ApiError) => void; la
     },
     async upsertMentor(m) {
       await guard();
-      return upsert(data.mentors, 'mentorId', { ...m, createdAt: m.createdAt || nowIso() });
+      const saved = upsert(data.mentors, 'mentorId', { ...m, createdAt: m.createdAt || nowIso() });
+      for (const l of data.mentorLinks) if (l.mentorId === m.mentorId) l.mentorName = m.name;
+      return saved;
     },
     async upsertMentorLink(l) {
       await guard();
