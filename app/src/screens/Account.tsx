@@ -1,24 +1,18 @@
-import { useEffect, useState } from 'react';
-import { ApiError } from '../api/types';
-import { useApp } from '../state/AppContext';
+import { useApp, useSync } from '../state/AppContext';
+import { SyncStatus } from '../components/SyncStatus';
 
-/** Phase 2 version: who's signed in, a check that the sheet answers, and Sign out. */
+function timeAgo(at: number | null): string {
+  if (!at) return 'not yet';
+  const mins = Math.round((Date.now() - at) / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins} min ago`;
+  return new Date(at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+
+/** Phase 3 version: who's signed in, sync status with Sync now, the sheet, and Sign out. */
 export function Account() {
-  const { api, email, demo, signOut } = useApp();
-  const [sheet, setSheet] = useState<{ name: string; url: string } | null>(null);
-  const [problem, setProblem] = useState('');
-
-  useEffect(() => {
-    let live = true;
-    api.getAll()
-      .then((d) => { if (live) setSheet({ name: d.sheetName, url: d.sheetUrl }); })
-      .catch((e: unknown) => {
-        if (live && !(e instanceof ApiError && e.code === 'AUTH')) {
-          setProblem(e instanceof ApiError ? e.message : "Can't reach your sheet right now.");
-        }
-      });
-    return () => { live = false; };
-  }, [api]);
+  const { sync, email, demo, signOut } = useApp();
+  const { data, status, loading, lastSyncedAt, failed } = useSync();
 
   return (
     <>
@@ -30,18 +24,29 @@ export function Account() {
         </div>
         <div>
           <p className="label">Your sheet</p>
-          {problem ? (
-            <p className="notice error" role="alert">{problem}</p>
-          ) : sheet ? (
-            <p className="value">
-              {sheet.name}
-              {!demo && sheet.url && (
-                <a href={sheet.url} target="_blank" rel="noopener noreferrer">Open my Google Sheet</a>
-              )}
-            </p>
-          ) : (
-            <p className="muted" role="status">Checking your sheet…</p>
+          <p className="value">
+            {data?.sheetName || (loading ? 'Checking your sheet…' : '—')}
+            {!demo && data?.sheetUrl && (
+              <a href={data.sheetUrl} target="_blank" rel="noopener noreferrer">Open my Google Sheet</a>
+            )}
+          </p>
+        </div>
+        <div className="stack-sm">
+          <p className="label">Saving</p>
+          <SyncStatus status={status} />
+          <p className="hint">Last loaded from your sheet: {timeAgo(lastSyncedAt)}</p>
+          {failed.length > 0 && (
+            <div className="notice warn">
+              <p>
+                {failed.length === 1 ? "One change couldn't be saved" : `${failed.length} changes couldn't be saved`} and
+                {' '}{failed.length === 1 ? 'was' : 'were'} undone on this device.
+              </p>
+              <button type="button" className="btn-quiet" onClick={() => sync.dismissFailed()}>OK</button>
+            </div>
           )}
+          <button type="button" className="btn-secondary" disabled={loading} onClick={() => void sync.refresh()}>
+            {loading ? 'Syncing…' : 'Sync now'}
+          </button>
         </div>
         <button type="button" className="btn-secondary wide" onClick={() => void signOut()}>Sign out</button>
       </section>

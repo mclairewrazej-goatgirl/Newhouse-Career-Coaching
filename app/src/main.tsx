@@ -10,7 +10,8 @@ import { browserStore } from './state/storage';
 
 registerSW({ immediate: true });
 
-const store = createSessionStore(browserStore());
+const kv = browserStore();
+const store = createSessionStore(kv);
 
 // A personal app link (?connect=…) links this device to the coach's sheet.
 const link = readConnectFromSearch(window.location.search);
@@ -22,6 +23,6 @@ if (link.kind !== 'none') {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App store={store} demo={import.meta.env.VITE_DEMO === '1'} badLink={link.kind === 'invalid'} />
+    <App store={store} kv={kv} demo={import.meta.env.VITE_DEMO === '1'} badLink={link.kind === 'invalid'} />
   </StrictMode>,
 );
