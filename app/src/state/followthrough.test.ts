@@ -36,8 +36,8 @@ describe('did they do it', () => {
 describe('made contact', () => {
   it('is saved on the mentor link', () => {
     let d = applyOp(base(), { action: 'upsertMentor', mentor: { mentorId: 'm_dana0001', name: 'Dana', role: '', organization: '', email: '', phone: '', notes: '', active: true } });
-    d = applyOp(d, { action: 'upsertMentorLink', link: { linkId: 'l_link0001', mentorId: 'm_dana0001', clientId: 'c_jordan01', status: 'suggested', date: '2026-11-01', contacted: '' } });
-    d = applyOp(d, { action: 'upsertMentorLink', link: { linkId: 'l_link0001', mentorId: 'm_dana0001', clientId: 'c_jordan01', status: 'suggested', date: '2026-11-01', contacted: 'yes' } });
+    d = applyOp(d, { action: 'upsertMentorLink', link: { linkId: 'l_link0001', mentorId: 'm_dana0001', clientId: 'c_jordan01', status: 'suggested', date: '2026-11-01', contacted: '', contactedOn: '' } });
+    d = applyOp(d, { action: 'upsertMentorLink', link: { linkId: 'l_link0001', mentorId: 'm_dana0001', clientId: 'c_jordan01', status: 'suggested', date: '2026-11-01', contacted: 'yes', contactedOn: '' } });
     expect(d.mentorLinks).toEqual([expect.objectContaining({ contacted: 'yes', date: '2026-11-01' })]);
   });
 });
@@ -49,6 +49,6 @@ describe('a sheet on an older connector', () => {
       mentorLinks: [{ link_id: 'l_1', status: 'suggested' }],
     });
     expect(d.suggestions[0]).toMatchObject({ outcome: 'helpful', done: '', doneAt: '' });
-    expect(d.mentorLinks[0]).toMatchObject({ contacted: '' });
+    expect(d.mentorLinks[0]).toMatchObject({ contacted: '', contactedOn: '' });
   });
 });

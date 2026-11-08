@@ -14,6 +14,7 @@ export const MESSAGES = {
   network: "Can't reach your sheet. Check your internet connection and try again.",
   timeout: 'Your sheet took too long to answer. Please try again.',
   unreadable: 'Your sheet sent an answer the app could not read. Please try again.',
+  outdated: 'Your sheet needs an update before this can be saved. Ask the person who set up your sheet to install the latest version.',
 } as const;
 
 const SERVER_CODES: ApiErrorCode[] = ['AUTH', 'LOCKED', 'BAD_INPUT', 'NOT_FOUND', 'SERVER'];
@@ -42,7 +43,9 @@ export function parseResponse(text: string): unknown {
   const b = body as { ok?: unknown; data?: unknown; error?: { code?: unknown; message?: unknown } };
   if (b.ok === true) return b.data ?? {};
   const code = SERVER_CODES.includes(b.error?.code as ApiErrorCode) ? (b.error!.code as ApiErrorCode) : 'SERVER';
-  const message = typeof b.error?.message === 'string' && b.error.message ? b.error.message : MESSAGES.unreadable;
+  let message = typeof b.error?.message === 'string' && b.error.message ? b.error.message : MESSAGES.unreadable;
+  // An older script in the sheet doesn't know a newer action yet.
+  if (/^unknown action\.?$/i.test(message)) message = MESSAGES.outdated;
   throw new ApiError(code, message);
 }
 

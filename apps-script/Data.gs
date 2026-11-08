@@ -347,6 +347,7 @@ function upsertMentorLink_(p) {
   var rec = validated_('MentorLinks', p.link);
   var statusGiven = p.link && typeof p.link.status === 'string' && p.link.status !== '';
   var contactedGiven = p.link && typeof p.link.contacted === 'string';
+  var contactedOnGiven = p.link && typeof p.link.contacted_on === 'string';
   return withLock_(function () {
     var mentor = find_(loadTable_('Mentors'), rec.mentor_id);
     if (!mentor) throw apiError_('NOT_FOUND', "That mentor isn't in your sheet.");
@@ -366,7 +367,9 @@ function upsertMentorLink_(p) {
       rec.link_id = existing.link_id;
       if (!statusGiven) rec.status = existing.status;
       if (!contactedGiven) rec.contacted = existing.contacted;
+      if (!contactedOnGiven) rec.contacted_on = existing.contacted_on;
     }
+    if (rec.contacted !== 'yes') rec.contacted_on = '';
     keepCreatedAt_(rec, existing);
     save_(t, rec);
     return { link: rec };

@@ -76,7 +76,9 @@ computer you use, and sign in.
   makes a tidy document to save or send.
   [screenshot: coaching summary preview]
 - **Mentors.** Keep the people you introduce clients to. On a client's
-  page, mark **Did they make contact?** once you hear back. If someone's been
+  page or during a session, mark **Did they make contact?** once you hear
+  back. Choosing **Yes** asks when: tap **At this session** (or **Today**), or
+  pick the date they reached out and tap **Save date**. If someone's been
   connected 3 or more times in 90 days, you'll see a "give them a break"
   warning.
 - **Review.** Look back by week or month, and mark which suggestions

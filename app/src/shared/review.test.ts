@@ -57,8 +57,8 @@ describe('reviewSummary', () => {
       sugg({ suggestionId: 'g_old', sessionId: 's_old', date: '2026-10-20', outcome: 'helpful' }),
     ],
     mentorLinks: [
-      { linkId: 'l_1', mentorId: 'm', mentorName: 'Dana', clientId: 'c_a', clientName: 'A', status: 'suggested', date: '2026-11-06', createdAt: '', contacted: '' },
-      { linkId: 'l_2', mentorId: 'm', mentorName: 'Dana', clientId: 'c_b', clientName: 'B', status: 'introduced', date: '2026-10-01', createdAt: '', contacted: '' },
+      { linkId: 'l_1', mentorId: 'm', mentorName: 'Dana', clientId: 'c_a', clientName: 'A', status: 'suggested', date: '2026-11-06', createdAt: '', contacted: '', contactedOn: '' },
+      { linkId: 'l_2', mentorId: 'm', mentorName: 'Dana', clientId: 'c_b', clientName: 'B', status: 'introduced', date: '2026-10-01', createdAt: '', contacted: '', contactedOn: '' },
     ],
   });
   const week = periodFor('week', new Date(2026, 10, 8));

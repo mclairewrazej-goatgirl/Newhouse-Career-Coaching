@@ -42,7 +42,7 @@ describe.each([
         'mentor_id', 'name', 'role', 'organization', 'email', 'phone', 'notes', 'active', 'created_at',
       ]);
       expect(impl.headersFor('MentorLinks')).toEqual([
-        'link_id', 'mentor_id', 'mentor_name', 'client_id', 'client_name', 'status', 'date', 'created_at', 'contacted',
+        'link_id', 'mentor_id', 'mentor_name', 'client_id', 'client_name', 'status', 'date', 'created_at', 'contacted', 'contacted_on',
       ]);
     });
 
@@ -67,7 +67,7 @@ describe.each([
       // Columns from the first release are never added automatically.
       expect(impl.missingHeaders('Clients', ['client_id', 'name', 'focus', 'active'])).toBeNull();
       expect(impl.missingHeaders('MentorLinks', ['link_id', 'mentor_id', 'mentor_name', 'client_id', 'client_name', 'status', 'date', 'created_at']))
-        .toEqual(['contacted']);
+        .toEqual(['contacted', 'contacted_on']);
     });
   });
 
@@ -228,6 +228,9 @@ describe.each([
       const base = { link_id: 'l_link0001', mentor_id: 'm_dana0001', client_id: 'c_jordan01', date: '2026-11-03' };
       expect(impl.validateRecord('MentorLinks', { ...base, contacted: 'yes' })).toMatchObject({ ok: true, value: { contacted: 'yes' } });
       expect(impl.validateRecord('MentorLinks', { ...base, contacted: 'maybe' }).ok).toBe(false);
+      expect(impl.validateRecord('MentorLinks', { ...base, contacted: 'yes', contacted_on: '2026-11-20' }))
+        .toMatchObject({ ok: true, value: { contacted_on: '2026-11-20' } });
+      expect(impl.validateRecord('MentorLinks', { ...base, contacted_on: 'Nov 20' }).ok).toBe(false);
     });
   });
 

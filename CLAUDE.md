@@ -37,9 +37,9 @@ A mobile-first web app (PWA) for one career coach to plan sessions, time them, t
 - **Sessions:** session_id, client_id, client_name, date, booked_min, actual_min, timed, covered, next_steps, planned_id, created_at
 - **Suggestions:** suggestion_id, session_id, client_id, client_name, date, text, outcome, outcome_at, done, done_at
 - **Mentors:** mentor_id, name, role, organization, email, phone, notes, active, created_at
-- **MentorLinks:** link_id, mentor_id, mentor_name, client_id, client_name, status, date, created_at, contacted
+- **MentorLinks:** link_id, mentor_id, mentor_name, client_id, client_name, status, date, created_at, contacted, contacted_on
 - Dates `YYYY-MM-DD`, times `HH:mm`, timestamps ISO 8601 with offset. Bullets stored as `• item` lines joined by `\n`.
-- Planned `status` ∈ booked | logged | cancelled. Suggestion `outcome` ∈ "" | helpful | not; `done` ∈ "" | yes | no (did the client do it). MentorLink `contacted` ∈ "" | yes | no (did the client make contact). MentorLink `status` ∈ suggested | introduced (the `date` is when the status was last set).
+- Planned `status` ∈ booked | logged | cancelled. Suggestion `outcome` ∈ "" | helpful | not; `done` ∈ "" | yes | no (did the client do it). MentorLink `contacted` ∈ "" | yes | no (did the client make contact); `contacted_on` is the date they did (blank unless contacted = yes). MentorLink `status` ∈ suggested | introduced (the `date` is when the status was last set).
 - Columns added after v1 are marked `added` in the schema and appended to older sheets' headers automatically (`missingHeaders`). Add new columns only at the end of a tab.
 - ids are client-generated: `c_`, `p_`, `s_`, `g_`, `m_`, `l_` + random.
 - Sessions.next_steps is a readable copy; the **Suggestions** tab (one row per next step) is the source of truth for outcomes.

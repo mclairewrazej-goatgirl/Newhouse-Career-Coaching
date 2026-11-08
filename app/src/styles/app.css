@@ -276,6 +276,10 @@ select.field{appearance:none;background-image:linear-gradient(45deg,transparent 
 
 /* ---------- did they do it / made contact ---------- */
 .yesno{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.contact-when{margin:0}
+.contact-now{align-self:flex-start}
+.contact-pick{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.contact-pick .field{width:auto;min-width:0;flex:0 1 11em}
 .yesno-q{font-size:.875rem;font-weight:600;color:var(--ink-2);min-width:7.5em}
 .goal-item{display:flex;flex-direction:column;gap:6px}
 .goal-text{font-weight:600}

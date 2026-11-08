@@ -75,6 +75,8 @@ export interface MentorLink {
   createdAt: string;
   /** Did the client make contact with the mentor? */
   contacted: YesNo;
+  /** When they made contact (YYYY-MM-DD), or '' if not recorded. */
+  contactedOn: string;
 }
 
 export interface AllData {

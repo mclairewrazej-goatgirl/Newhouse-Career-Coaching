@@ -61,10 +61,10 @@ export function demoData(today: Date = new Date()): AllData {
   const mname = (id: string) => mentors.find((m) => m.mentorId === id)!.name;
 
   const mentorLinks: MentorLink[] = [
-    { linkId: 'l_demo0001', mentorId: 'm_dana0001', mentorName: mname('m_dana0001'), clientId: 'c_jordan01', clientName: name('c_jordan01'), status: 'introduced', date: d(-5), createdAt: STAMP(d(-7)), contacted: 'yes' },
-    { linkId: 'l_demo0002', mentorId: 'm_dana0001', mentorName: mname('m_dana0001'), clientId: 'c_priya001', clientName: name('c_priya001'), status: 'suggested', date: d(-3), createdAt: STAMP(d(-3)), contacted: '' },
-    { linkId: 'l_demo0003', mentorId: 'm_dana0001', mentorName: mname('m_dana0001'), clientId: 'c_samok001', clientName: name('c_samok001'), status: 'suggested', date: d(-20), createdAt: STAMP(d(-20)), contacted: '' },
-    { linkId: 'l_demo0004', mentorId: 'm_aisha001', mentorName: mname('m_aisha001'), clientId: 'c_samok001', clientName: name('c_samok001'), status: 'introduced', date: d(-10), createdAt: STAMP(d(-12)), contacted: '' },
+    { linkId: 'l_demo0001', mentorId: 'm_dana0001', mentorName: mname('m_dana0001'), clientId: 'c_jordan01', clientName: name('c_jordan01'), status: 'introduced', date: d(-5), createdAt: STAMP(d(-7)), contacted: 'yes', contactedOn: d(-2) },
+    { linkId: 'l_demo0002', mentorId: 'm_dana0001', mentorName: mname('m_dana0001'), clientId: 'c_priya001', clientName: name('c_priya001'), status: 'suggested', date: d(-3), createdAt: STAMP(d(-3)), contacted: '', contactedOn: '' },
+    { linkId: 'l_demo0003', mentorId: 'm_dana0001', mentorName: mname('m_dana0001'), clientId: 'c_samok001', clientName: name('c_samok001'), status: 'suggested', date: d(-20), createdAt: STAMP(d(-20)), contacted: '', contactedOn: '' },
+    { linkId: 'l_demo0004', mentorId: 'm_aisha001', mentorName: mname('m_aisha001'), clientId: 'c_samok001', clientName: name('c_samok001'), status: 'introduced', date: d(-10), createdAt: STAMP(d(-12)), contacted: '', contactedOn: '' },
   ];
 
   return {
@@ -182,6 +182,7 @@ export function createDemoApi(options: { onAuthError?: (e: ApiError) => void; la
       const link: MentorLink = {
         ...l, linkId: existing?.linkId ?? l.linkId, mentorName: mentor.name, clientName: clientName(l.clientId),
         createdAt: existing?.createdAt || l.createdAt || nowIso(),
+        contactedOn: l.contacted === 'yes' ? l.contactedOn ?? '' : '',
       };
       return upsert(data.mentorLinks, 'linkId', link);
     },
