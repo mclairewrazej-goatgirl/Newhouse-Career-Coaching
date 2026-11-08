@@ -1,10 +1,13 @@
 import { createContext, useContext, useSyncExternalStore } from 'react';
 import type { Api } from '../api/types';
+import type { LiveStore } from './live';
 import type { SyncEngine, SyncSnapshot } from './sync';
 
 export interface AppContextValue {
   api: Api;
   sync: SyncEngine;
+  /** The session being run right now (timer and notes). */
+  live: LiveStore;
   email: string;
   demo: boolean;
   signOut: () => Promise<void>;
