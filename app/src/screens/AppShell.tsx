@@ -92,14 +92,17 @@ export function AppShell() {
     main = <Account />;
   }
 
+  const widePage = liveView.open || tab === 'schedule' || tab === 'review' || (tab === 'clients' && !!openClientId);
+
   return (
     <NavContext.Provider value={nav}>
       <div className="shell">
-        <main className={`shell-main${live && !liveView.open ? ' with-live-bar' : ''}`}>{main}</main>
+        <main className={`shell-main${widePage ? ' page-wide' : ''}${live && !liveView.open ? ' with-live-bar' : ''}`}>{main}</main>
         <div className="bottom">
           <FailedToast onDetails={() => nav.go('account')} />
           {live && !liveView.open && <LiveBar live={live} onOpen={nav.openLive} />}
           <nav className="tabbar" aria-label="Main">
+            <span className="brand-name display" aria-hidden="true">Coaching Tracker</span>
             {TABS.map((t) => (
               <button
                 key={t.id} type="button" className="tab" aria-current={tab === t.id && !liveView.open ? 'page' : undefined}

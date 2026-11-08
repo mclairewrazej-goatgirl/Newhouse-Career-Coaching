@@ -7,6 +7,12 @@ coach pastes in new code (see README › *Updating the app later*).
 The version is `CONNECTOR_VERSION` in `apps-script/Config.gs`, and the app
 can read it with the `ping` action.
 
+## 1.1.1 — 2026-11-08
+
+- The app moved to `https://mclairewrazej-goatgirl.github.io/Newhouse-Professional-Coaching/`.
+  `APP_URL` in `Config.gs` now points there, so **Show my app link** and
+  **Finish setup** give links to the new address. Only `Config.gs` changed.
+
 ## 1.1.0 — 2026-11-08
 
 Security review before hand-off.

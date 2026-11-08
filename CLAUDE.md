@@ -1,6 +1,6 @@
 # CLAUDE.md — Coaching Tracker
 
-Context for Claude Code. Read README.md and WORKPLAN.md too.
+Context for Claude Code. Read README.md too (CHANGELOG.md for connector versions).
 
 ## What this is
 A mobile-first web app (PWA) for one career coach to plan sessions, time them, take bullet notes, total time per client, keep a mentor contact list (tracking who was suggested/introduced to whom so mentors aren't overused), print a per-client coaching summary as PDF, and review suggestions by week/month marking what helped. Tabs: Schedule, Clients, Mentors, Review, Account. Data lives in the coach's own Google Sheet via an Apps Script "connector" in that sheet. The front end is hosted on GitHub Pages and holds no data server-side.
@@ -16,7 +16,7 @@ A mobile-first web app (PWA) for one career coach to plan sessions, time them, t
 ## Stack
 - Front end: React 18 + Vite + TypeScript, vite-plugin-pwa, Vitest. Plain CSS with tokens (no UI framework). Ask before adding other dependencies.
 - Backend: Google Apps Script (V8), bound to the sheet. Optional clasp.
-- Hosting: GitHub Pages via Actions, base path `/Newhouse-Career-Coaching/`.
+- Hosting: GitHub Pages via Actions, base path `/Newhouse-Professional-Coaching/`.
 
 ## Design tokens (from the approved demo)
 ```css

@@ -1,6 +1,7 @@
 import { useEffect, useId, useState, type FormEvent } from 'react';
 import type { PlannedInput } from '../api/types';
 import { BulletEditor } from '../components/BulletEditor';
+import { Columns } from '../components/Columns';
 import { MentorConnections } from '../components/MentorConnections';
 import { OutcomeToggle } from '../components/OutcomeToggle';
 import { PlanForm } from '../components/PlanForm';
@@ -251,6 +252,25 @@ export function LiveSession({ startFor, onClose, onOpenClient }: Props) {
     onClose();
   }
 
+  const prep = <PrepCard live={s} />;
+  const timer = <TimerCard live={s} />;
+  const covered = (
+    <BulletEditor label="What you covered" items={s.covered} onChange={(c) => update((x) => ({ ...x, covered: c }))}
+      placeholder="e.g. Reviewed CV draft" />
+  );
+  const nextSteps = (
+    <BulletEditor label="Next steps" items={s.nextSteps} onChange={(n) => update((x) => ({ ...x, nextSteps: n }))}
+      placeholder="e.g. Reach out to two contacts" />
+  );
+  const mentors = <MentorConnections clientId={s.clientId} live />;
+  const finish = (
+    <div className="stack-sm">
+      <p className="hint">Your notes are saved on this device as you type. They go to your sheet when you end the session.</p>
+      <button type="button" className="btn-primary wide end-btn" onClick={end}>End, save &amp; log</button>
+      <button type="button" className="btn-danger" onClick={discard}>Discard session</button>
+    </div>
+  );
+
   return (
     <>
       <button type="button" className="back" onClick={onClose}>‹ Back (session keeps running)</button>
@@ -265,17 +285,11 @@ export function LiveSession({ startFor, onClose, onOpenClient }: Props) {
         )}
       </header>
 
-      <PrepCard live={s} />
-      <TimerCard live={s} />
-      <BulletEditor label="What you covered" items={s.covered} onChange={(covered) => update((x) => ({ ...x, covered }))}
-        placeholder="e.g. Reviewed CV draft" />
-      <BulletEditor label="Next steps" items={s.nextSteps} onChange={(nextSteps) => update((x) => ({ ...x, nextSteps }))}
-        placeholder="e.g. Reach out to two contacts" />
-      <MentorConnections clientId={s.clientId} live />
-      <p className="hint">Your notes are saved on this device as you type. They go to your sheet when you end the session.</p>
-
-      <button type="button" className="btn-primary wide end-btn" onClick={end}>End, save &amp; log</button>
-      <button type="button" className="btn-danger" onClick={discard}>Discard session</button>
+      <Columns
+        left={<>{prep}{timer}{mentors}</>}
+        right={<>{covered}{nextSteps}{finish}</>}
+        phone={<>{prep}{timer}{covered}{nextSteps}{mentors}{finish}</>}
+      />
     </>
   );
 }

@@ -6,10 +6,10 @@
  */
 
 /** Where the app lives. The personal app link is APP_URL + "?connect=…". */
-var APP_URL = 'https://mclairewrazej-goatgirl.github.io/Newhouse-Career-Coaching/';
+var APP_URL = 'https://mclairewrazej-goatgirl.github.io/Newhouse-Professional-Coaching/';
 
 /** Bump when the connector changes; returned by the "ping" action. */
-var CONNECTOR_VERSION = '1.1.0';
+var CONNECTOR_VERSION = '1.1.1';
 
 /** Password hashing: salted SHA-256, repeated this many times. */
 var HASH_ITERATIONS = 10000;

@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // GitHub Pages serves the app from /<repo-name>/.
-const BASE = '/Newhouse-Career-Coaching/';
+const BASE = '/Newhouse-Professional-Coaching/';
 
 export default defineConfig({
   base: BASE,
