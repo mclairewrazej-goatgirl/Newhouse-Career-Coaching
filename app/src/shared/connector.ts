@@ -24,6 +24,8 @@ export interface Column {
   min?: number;
   values?: string[];
   fallback?: boolean;
+  /** Connector version that added this column; older sheets get it appended (see missingHeaders). */
+  added?: string;
 }
 
 export type TabName = 'Clients' | 'Planned' | 'Sessions' | 'Suggestions' | 'Mentors' | 'MentorLinks';
@@ -86,6 +88,8 @@ export const SCHEMA: Record<TabName, { key: string; columns: Column[] }> = {
       { name: 'text', type: 'text', max: 1000, required: true },
       { name: 'outcome', type: 'enum', values: ['', 'helpful', 'not'], server: true },
       { name: 'outcome_at', type: 'timestamp', server: true },
+      { name: 'done', type: 'enum', values: ['', 'yes', 'no'], server: true, added: '1.2.0' },
+      { name: 'done_at', type: 'timestamp', server: true, added: '1.2.0' },
     ],
   },
   Mentors: {
@@ -113,6 +117,7 @@ export const SCHEMA: Record<TabName, { key: string; columns: Column[] }> = {
       { name: 'status', type: 'enum', values: ['suggested', 'introduced'] },
       { name: 'date', type: 'date', required: true },
       { name: 'created_at', type: 'timestamp' },
+      { name: 'contacted', type: 'enum', values: ['', 'yes', 'no'], added: '1.2.0' },
     ],
   },
 };
@@ -355,4 +360,23 @@ export function headersMatch(tab: TabName, actual: readonly CellValue[]): boolea
     if (String(actual[i] === undefined ? '' : actual[i]).trim() !== expected[i]) return false;
   }
   return true;
+}
+
+/**
+ * For a sheet made before some columns were added: the header names to
+ * append when the row matches the schema up to those columns and the cells
+ * where they go are empty. [] when nothing is missing; null when the header
+ * doesn't match (so nothing is changed).
+ */
+export function missingHeaders(tab: TabName, actual: readonly CellValue[]): string[] | null {
+  const expected = headersFor(tab);
+  const cols = SCHEMA[tab].columns;
+  const cell = (i: number) => String(actual[i] === undefined || actual[i] === null ? '' : actual[i]).trim();
+  let i = 0;
+  while (i < expected.length && cell(i) === expected[i]) i++;
+  if (i === expected.length) return [];
+  for (let j = i; j < expected.length; j++) {
+    if (!cols[j].added || cell(j) !== '') return null;
+  }
+  return expected.slice(i);
 }

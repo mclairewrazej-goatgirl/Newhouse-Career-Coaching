@@ -213,8 +213,8 @@ describe('applyOp', () => {
   it('connecting the same mentor and client again updates the one row', () => {
     let d = applyOp(emptyData(), { action: 'upsertClient', client: client('c_jordan01', 'Jordan') });
     d = applyOp(d, { action: 'upsertMentor', mentor: { mentorId: 'm_dana0001', name: 'Dana', role: '', organization: '', email: '', phone: '', notes: '', active: true } });
-    d = applyOp(d, { action: 'upsertMentorLink', link: { linkId: 'l_link0001', mentorId: 'm_dana0001', clientId: 'c_jordan01', status: 'suggested', date: '2026-11-01' } });
-    d = applyOp(d, { action: 'upsertMentorLink', link: { linkId: 'l_link0002', mentorId: 'm_dana0001', clientId: 'c_jordan01', status: 'introduced', date: '2026-11-05' } });
+    d = applyOp(d, { action: 'upsertMentorLink', link: { linkId: 'l_link0001', mentorId: 'm_dana0001', clientId: 'c_jordan01', status: 'suggested', date: '2026-11-01', contacted: '' } });
+    d = applyOp(d, { action: 'upsertMentorLink', link: { linkId: 'l_link0002', mentorId: 'm_dana0001', clientId: 'c_jordan01', status: 'introduced', date: '2026-11-05', contacted: '' } });
     expect(d.mentorLinks).toEqual([expect.objectContaining({ linkId: 'l_link0001', status: 'introduced', date: '2026-11-05', mentorName: 'Dana' })]);
   });
 });

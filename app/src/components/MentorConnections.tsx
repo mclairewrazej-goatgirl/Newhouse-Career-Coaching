@@ -1,11 +1,24 @@
 import { useId, useState, type FormEvent } from 'react';
-import type { MentorLink } from '../api/types';
+import type { MentorLink, MentorLinkInput, YesNo } from '../api/types';
 import { toDateString } from '../shared/dates';
 import { formatDay } from '../shared/clients';
 import { newId, nowIsoWithOffset } from '../shared/ids';
 import { MENTOR_RECENT_DAYS, needsBreak, recentUseCount, STATUS_LABEL, telHref } from '../shared/mentors';
 import { useApp, useSync } from '../state/AppContext';
 import { useNav } from '../state/nav';
+import { YesNoToggle } from './YesNoToggle';
+
+const linkInput = (l: MentorLink): MentorLinkInput => ({
+  linkId: l.linkId, mentorId: l.mentorId, clientId: l.clientId, status: l.status, date: l.date, createdAt: l.createdAt,
+  contacted: l.contacted ?? '',
+});
+
+/** "Made contact" / "No contact yet" tag for lists. Nothing until it's been answered. */
+export function ContactTag({ link }: { link: MentorLink }) {
+  if (link.contacted === 'yes') return <span className="tag tag-contact-yes">Made contact</span>;
+  if (link.contacted === 'no') return <span className="tag tag-contact-no">No contact yet</span>;
+  return null;
+}
 
 interface Props {
   clientId: string;
@@ -33,7 +46,11 @@ export function MentorConnections({ clientId, live = false }: Props) {
   const alreadyLinked = links.find((l) => l.mentorId === mentorId);
 
   function setLinkStatus(l: MentorLink, s: MentorLink['status']) {
-    sync.enqueue({ action: 'upsertMentorLink', link: { linkId: l.linkId, mentorId: l.mentorId, clientId: l.clientId, status: s, date: today, createdAt: l.createdAt } });
+    sync.enqueue({ action: 'upsertMentorLink', link: { ...linkInput(l), status: s, date: today } });
+  }
+  function setContacted(l: MentorLink, contacted: YesNo) {
+    // Keeps the date: it records when the connection was made, which drives the "give them a break" count.
+    sync.enqueue({ action: 'upsertMentorLink', link: { ...linkInput(l), contacted } });
   }
   function remove(l: MentorLink) {
     if (!window.confirm(`Remove the connection between ${l.mentorName} and ${l.clientName}?`)) return;
@@ -44,7 +61,10 @@ export function MentorConnections({ clientId, live = false }: Props) {
     if (!mentorId) return;
     sync.enqueue({
       action: 'upsertMentorLink',
-      link: { linkId: alreadyLinked?.linkId ?? newId('l'), mentorId, clientId, status, date: today, createdAt: alreadyLinked?.createdAt || nowIsoWithOffset() },
+      link: {
+        linkId: alreadyLinked?.linkId ?? newId('l'), mentorId, clientId, status, date: today,
+        createdAt: alreadyLinked?.createdAt || nowIsoWithOffset(), contacted: alreadyLinked?.contacted ?? '',
+      },
     });
     setConnecting(false);
     setMentorId('');
@@ -81,6 +101,7 @@ export function MentorConnections({ clientId, live = false }: Props) {
                   </select>
                   <button type="button" className="mini-btn" onClick={() => remove(l)} aria-label={`Remove ${l.mentorName}`}>×</button>
                 </div>
+                <YesNoToggle question="Did they make contact?" value={l.contacted ?? ''} onChange={(v) => setContacted(l, v)} />
                 {live && (m?.email || m?.phone) && (
                   <div className="row">
                     {m?.email && <a className="btn-secondary link-button" href={`mailto:${m.email}`}>Email</a>}

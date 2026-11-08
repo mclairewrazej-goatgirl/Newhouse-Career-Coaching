@@ -15,8 +15,8 @@ const OUTCOME_LABEL: Record<Suggestion['outcome'], string> = { '': '', helpful: 
 
 function SessionCard({ session, suggestions, now }: { session: Session; suggestions: Suggestion[]; now: Date }) {
   const steps = suggestions.length
-    ? suggestions.map((s) => ({ key: s.suggestionId, text: s.text, outcome: s.outcome }))
-    : session.nextSteps.map((text, i) => ({ key: String(i), text, outcome: '' as const }));
+    ? suggestions.map((s) => ({ key: s.suggestionId, text: s.text, outcome: s.outcome, done: s.done }))
+    : session.nextSteps.map((text, i) => ({ key: String(i), text, outcome: '' as const, done: '' as const }));
   return (
     <article className="card stack-sm session-card">
       <header className="session-head">
@@ -38,6 +38,7 @@ function SessionCard({ session, suggestions, now }: { session: Session; suggesti
             {steps.map((s) => (
               <li key={s.key}>
                 {s.text}
+                {s.done && <span className={`tag tag-done-${s.done}`}>{s.done === 'yes' ? 'Done' : 'Not done'}</span>}
                 {s.outcome && <span className={`tag tag-${s.outcome}`}>{OUTCOME_LABEL[s.outcome]}</span>}
               </li>
             ))}

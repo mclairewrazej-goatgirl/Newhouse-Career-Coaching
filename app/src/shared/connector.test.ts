@@ -11,7 +11,7 @@ function loadGs(): typeof ts {
     'SCHEMA', 'TAB_NAMES', 'headersFor', 'isValidId', 'joinBullets', 'splitBullets',
     'escapeCell', 'unescapeCell', 'isValidDate', 'isValidTime', 'isValidTimestamp',
     'isConnectorAddress', 'isPlausibleEmail', 'checkCredentials', 'validateRecord',
-    'rowToRecord', 'recordToRow', 'rowFormats', 'headersMatch',
+    'rowToRecord', 'recordToRow', 'rowFormats', 'headersMatch', 'missingHeaders',
   ];
   const factory = new Function(`${sharedGs}\nreturn { ${names.join(', ')} };`);
   return factory() as typeof ts;
@@ -36,13 +36,13 @@ describe.each([
         'planned_id', 'created_at',
       ]);
       expect(impl.headersFor('Suggestions')).toEqual([
-        'suggestion_id', 'session_id', 'client_id', 'client_name', 'date', 'text', 'outcome', 'outcome_at',
+        'suggestion_id', 'session_id', 'client_id', 'client_name', 'date', 'text', 'outcome', 'outcome_at', 'done', 'done_at',
       ]);
       expect(impl.headersFor('Mentors')).toEqual([
         'mentor_id', 'name', 'role', 'organization', 'email', 'phone', 'notes', 'active', 'created_at',
       ]);
       expect(impl.headersFor('MentorLinks')).toEqual([
-        'link_id', 'mentor_id', 'mentor_name', 'client_id', 'client_name', 'status', 'date', 'created_at',
+        'link_id', 'mentor_id', 'mentor_name', 'client_id', 'client_name', 'status', 'date', 'created_at', 'contacted',
       ]);
     });
 
@@ -55,6 +55,19 @@ describe.each([
       expect(impl.headersMatch('Clients', ['client_id', 'name', 'focus', 'active', 'created_at', 'my notes'])).toBe(true);
       expect(impl.headersMatch('Clients', ['client_id', 'Name', 'focus', 'active', 'created_at'])).toBe(false);
       expect(impl.headersMatch('Clients', ['client_id', 'name'])).toBe(false);
+    });
+
+    it('finds columns added since a sheet was made, and nothing else', () => {
+      const old = ['suggestion_id', 'session_id', 'client_id', 'client_name', 'date', 'text', 'outcome', 'outcome_at'];
+      expect(impl.missingHeaders('Suggestions', old)).toEqual(['done', 'done_at']);
+      expect(impl.missingHeaders('Suggestions', [...old, 'done', '', ''])).toEqual(['done_at']);
+      expect(impl.missingHeaders('Suggestions', [...old, 'done', 'done_at'])).toEqual([]);
+      // Something else is where the new column would go: leave it alone.
+      expect(impl.missingHeaders('Suggestions', [...old, 'my notes'])).toBeNull();
+      // Columns from the first release are never added automatically.
+      expect(impl.missingHeaders('Clients', ['client_id', 'name', 'focus', 'active'])).toBeNull();
+      expect(impl.missingHeaders('MentorLinks', ['link_id', 'mentor_id', 'mentor_name', 'client_id', 'client_name', 'status', 'date', 'created_at']))
+        .toEqual(['contacted']);
     });
   });
 
@@ -192,11 +205,11 @@ describe.each([
     });
     it('never takes server-controlled suggestion fields from the app', () => {
       const r = impl.validateRecord('Suggestions', {
-        suggestion_id: 'g_sugg0001', text: 'Add two quotes', outcome: 'helpful', session_id: 's_other001',
+        suggestion_id: 'g_sugg0001', text: 'Add two quotes', outcome: 'helpful', session_id: 's_other001', done: 'yes',
       });
       expect(r.ok && r.value).toEqual({
         suggestion_id: 'g_sugg0001', session_id: '', client_id: '', client_name: '', date: '', text: 'Add two quotes',
-        outcome: '', outcome_at: '',
+        outcome: '', outcome_at: '', done: '', done_at: '',
       });
     });
     it('lets mentors save with any email or phone formatting', () => {
@@ -209,7 +222,12 @@ describe.each([
       const r = impl.validateRecord('MentorLinks', {
         link_id: 'l_link0001', mentor_id: 'm_dana0001', client_id: 'c_jordan01', date: '2026-11-03',
       });
-      expect(r.ok && r.value).toMatchObject({ status: 'suggested', mentor_name: '', client_name: '' });
+      expect(r.ok && r.value).toMatchObject({ status: 'suggested', mentor_name: '', client_name: '', contacted: '' });
+    });
+    it('records whether the client made contact with the mentor', () => {
+      const base = { link_id: 'l_link0001', mentor_id: 'm_dana0001', client_id: 'c_jordan01', date: '2026-11-03' };
+      expect(impl.validateRecord('MentorLinks', { ...base, contacted: 'yes' })).toMatchObject({ ok: true, value: { contacted: 'yes' } });
+      expect(impl.validateRecord('MentorLinks', { ...base, contacted: 'maybe' }).ok).toBe(false);
     });
   });
 

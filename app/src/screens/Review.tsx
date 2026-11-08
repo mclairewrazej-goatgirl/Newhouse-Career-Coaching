@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Columns } from '../components/Columns';
-import { OutcomeToggle } from '../components/OutcomeToggle';
+import { GoalItem } from '../components/GoalItem';
 import { FirstLoad } from '../components/Skeleton';
 import { SyncStatus } from '../components/SyncStatus';
 import { formatDay } from '../shared/clients';
 import { STATUS_SHORT } from '../shared/mentors';
+import { ContactTag } from '../components/MentorConnections';
 import { formatMinutes } from '../shared/minutes';
 import { filterSuggestions, periodFor, periodLabel, reviewSummary, type OutcomeFilter, type PeriodKind } from '../shared/review';
 import { useSync } from '../state/AppContext';
@@ -105,7 +106,7 @@ export function Review() {
                   <button type="button" className="link-text" onClick={() => nav.openClient(g.clientId)}>{g.clientName}</button>
                   {' · '}{formatDay(g.date, now)}
                 </p>
-                <OutcomeToggle suggestion={g} />
+                <GoalItem suggestion={g} />
               </li>
             ))}
           </ul>
@@ -127,6 +128,7 @@ export function Review() {
                     <span className="list-title">{l.mentorName} → {l.clientName}</span>
                     <span className="list-meta">
                       <span className={`tag tag-${l.status}`}>{STATUS_SHORT[l.status]}</span> {formatDay(l.date, now)}
+                      {' '}<ContactTag link={l} />
                     </span>
                   </span>
                   <span className="chevron" aria-hidden="true">›</span>

@@ -25,13 +25,22 @@ function prepareSheet() {
   PropertiesService.getScriptProperties().setProperty(SPREADSHEET_ID_KEY_, ss.getId());
 
   var created = [];
+  var added = [];
   var problems = [];
   TAB_NAMES.forEach(function (tab) {
     var sheet = ss.getSheetByName(tab);
     var headers = headersFor(tab);
     if (sheet) {
       var current = sheet.getLastRow() >= 1 ? sheet.getRange(1, 1, 1, headers.length).getValues()[0] : [];
-      if (!headersMatch(tab, current)) problems.push(tab);
+      if (!headersMatch(tab, current)) {
+        var missing = missingHeaders(tab, current);
+        if (missing && missing.length) {
+          addMissingColumns_(tab, sheet, current);
+          added.push(tab + ' (' + missing.join(', ') + ')');
+        } else {
+          problems.push(tab);
+        }
+      }
       return;
     }
     sheet = ss.insertSheet(tab);
@@ -54,7 +63,9 @@ function prepareSheet() {
   }
 
   var lines = [];
-  lines.push(created.length ? 'Added these tabs: ' + created.join(', ') + '.' : 'All six tabs were already there. Nothing was changed.');
+  if (created.length) lines.push('Added these tabs: ' + created.join(', ') + '.');
+  if (added.length) lines.push('Added new columns to: ' + added.join('; ') + '.');
+  if (!created.length && !added.length) lines.push('All six tabs were already there. Nothing was changed.');
   if (problems.length) {
     lines.push('');
     lines.push('Please check the first row of: ' + problems.join(', ') + '. It has been changed, and the app needs the original column names back.');

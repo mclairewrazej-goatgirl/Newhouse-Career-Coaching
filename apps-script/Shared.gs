@@ -24,6 +24,8 @@
  *  bullets   list of strings; stored in the sheet as "• item" lines
  * `server: true` columns are filled in by the connector, never taken from
  * the app's input.
+ * `added: '1.2.0'` marks a column added after the first release; sheets made
+ * earlier get it appended to the header automatically (see missingHeaders).
  */
 var SCHEMA = {
   Clients: {
@@ -77,6 +79,8 @@ var SCHEMA = {
       { name: 'text', type: 'text', max: 1000, required: true },
       { name: 'outcome', type: 'enum', values: ['', 'helpful', 'not'], server: true },
       { name: 'outcome_at', type: 'timestamp', server: true },
+      { name: 'done', type: 'enum', values: ['', 'yes', 'no'], server: true, added: '1.2.0' },
+      { name: 'done_at', type: 'timestamp', server: true, added: '1.2.0' },
     ],
   },
   Mentors: {
@@ -104,6 +108,7 @@ var SCHEMA = {
       { name: 'status', type: 'enum', values: ['suggested', 'introduced'] },
       { name: 'date', type: 'date', required: true },
       { name: 'created_at', type: 'timestamp' },
+      { name: 'contacted', type: 'enum', values: ['', 'yes', 'no'], added: '1.2.0' },
     ],
   },
 };
@@ -364,4 +369,23 @@ function headersMatch(tab, actual) {
     if (String(actual[i] === undefined ? '' : actual[i]).trim() !== expected[i]) return false;
   }
   return true;
+}
+
+/**
+ * For a sheet made before some columns were added: the header names to
+ * append (e.g. ["done", "done_at"]) when the row matches the schema up to
+ * those columns and the cells where they go are empty. [] when nothing is
+ * missing; null when the header doesn't match (so nothing is changed).
+ */
+function missingHeaders(tab, actual) {
+  var expected = headersFor(tab);
+  var cols = SCHEMA[tab].columns;
+  var cell = function (i) { return String(actual[i] === undefined || actual[i] === null ? '' : actual[i]).trim(); };
+  var i = 0;
+  while (i < expected.length && cell(i) === expected[i]) i++;
+  if (i === expected.length) return [];
+  for (var j = i; j < expected.length; j++) {
+    if (!cols[j].added || cell(j) !== '') return null;
+  }
+  return expected.slice(i);
 }

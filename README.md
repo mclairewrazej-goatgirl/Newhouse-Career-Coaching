@@ -162,6 +162,7 @@ You're done. 🎉
 
 **Running a session**
 - Tap **Start session** on one of today's planned sessions (on the *Next up* card, in the day list, or on the client's page). At the top you'll see the **Join Google Meet** button, the **goals for today** (the next steps agreed last time), and **what you covered last time**.
+- For each goal, answer **Did they do it?** (**Done** / **Not yet**). If it's done, mark whether it **helped**. If it's not done yet, tap **Carry over to next session** to add it to today's next steps, so it comes up again next time.
 - Tap **Begin** to start the timer, and **Pause** / **Resume** as needed. It keeps counting if you switch apps or your screen locks, and the bar turns orange if you go over the booked time.
 - Add points under **What you covered** and **Next steps**: type a point, press Enter or **+**. Tap a point to change it, use **↑ ↓** to reorder, and **×** to remove one. Notes are kept on the device as you type, so a refresh or flat battery doesn't lose them.
 - You can leave the session screen to look something up. A green **Session in progress** bar above the tabs brings you back. Only one session can run at a time.
@@ -173,7 +174,7 @@ You're done. 🎉
 **Clients tab**
 - **+ Add client**: name and an optional coaching focus.
 - Tap a client to see total time in their coaching block, their next booking, their mentor connections, and every past session's notes.
-- **Mentor connections** on a client's page: tap **+ Connect**, pick a mentor, and choose either *Suggested they get in touch* or *I reached out and introduced them*. You can change it later from the same drop-down (for example, from suggested to introduced). If a mentor has already been connected with 3 or more clients in the last 90 days, you'll see a gentle "give them a break" warning.
+- **Mentor connections** on a client's page: tap **+ Connect**, pick a mentor, and choose either *Suggested they get in touch* or *I reached out and introduced them*. You can change it later from the same drop-down (for example, from suggested to introduced). Once you hear back, answer **Did they make contact?** (**Yes** / **Not yet**) on the same card. If a mentor has already been connected with 3 or more clients in the last 90 days, you'll see a gentle "give them a break" warning.
 - **Coaching summary (PDF)** at the top of a client's page shows a clean document of every session: date, time, what you covered and next steps, plus the mentors you connected them with. Tick **Include mentor contact details** to add their email and phone. Tap **Save as PDF or print**, then:
   - **iPhone:** in the print screen, tap the **share** button at the top and choose **Save to Files** (or **Mail** to send it). On older iPhones, pinch outwards on the page preview to open the PDF, then share it.
   - **Android:** choose **Save as PDF** as the printer, then tap the download button.
@@ -189,7 +190,7 @@ You're done. 🎉
 **Review tab**
 - Switch between **Week** and **Month**, and use the arrows to go back in time.
 - See sessions held, time coached, suggestions given and mentor connections for that period.
-- **Suggestions you gave** lists every next step from those sessions. Mark each as **Helped** or **Didn't help**, and filter to see only what helped (or didn't). You can also mark these during the next session: the *Goals for today* card has the same buttons.
+- **Suggestions you gave** lists every next step from those sessions. Mark whether the client did it, then whether it **Helped** or **Didn't help**, and filter to see only what helped (or didn't). You can also mark these during the next session: the *Goals for today* card has the same buttons.
 
 **Account tab**
 - Shows who's signed in, whether everything is saved to your sheet (and how many changes are waiting), and buttons to **Open my Google Sheet**, **Sync now** and **Sign out**.
@@ -265,7 +266,7 @@ Forgot your password? Same steps. You don't need the old one.
 
 ## What's in the Google Sheet
 
-Created automatically by **Prepare my sheet**. You can read, sort and filter it like any sheet. Don't rename tabs or header cells.
+Created automatically by **Prepare my sheet**. You can read, sort and filter it like any sheet. Don't rename tabs or header cells. When an update adds new columns, they're added to the end of the tab automatically.
 
 **Clients**
 
@@ -320,6 +321,8 @@ Bullet lists are stored one point per line inside the cell, so they stay readabl
 | `text` | Add two quotes from interview notes |
 | `outcome` | helpful / not / (blank = no feedback yet) |
 | `outcome_at` | when it was marked |
+| `done` | yes / no / (blank) — did the client do it? |
+| `done_at` | when that was marked |
 
 **Mentors**
 
@@ -345,6 +348,7 @@ Bullet lists are stored one point per line inside the cell, so they stay readabl
 | `status` | suggested / introduced |
 | `date` | 2026-11-03 (when the status was last set) |
 | `created_at` | … |
+| `contacted` | yes / no / (blank) — did the client make contact with the mentor? |
 
 > Mentor contact details are about people who aren't your clients. Only store what they've agreed to share, and keep the sheet private.
 
