@@ -32,7 +32,7 @@ you've read everything.
 Phase 0 from WORKPLAN.md. Set up the repo skeleton:
 - app/ : Vite + React + TypeScript. Add vite-plugin-pwa (manifest with
   name "Coaching Tracker", theme colour #1F5E57, simple placeholder icon).
-  Set the Vite base path to /coaching-tracker/.
+  Set the Vite base path to /Newhouse-Career-Coaching/.
 - apps-script/ : empty files appsscript.json, Config.gs, Api.gs, Auth.gs,
   Data.gs, Menu.gs, Setup.html with a header comment explaining each.
 - .github/workflows/deploy.yml that builds app/ and deploys to GitHub

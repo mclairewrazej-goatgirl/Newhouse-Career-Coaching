@@ -16,7 +16,7 @@ A mobile-first web app (PWA) for one career coach to plan sessions, time them, t
 ## Stack
 - Front end: React 18 + Vite + TypeScript, vite-plugin-pwa, Vitest. Plain CSS with tokens (no UI framework). Ask before adding other dependencies.
 - Backend: Google Apps Script (V8), bound to the sheet. Optional clasp.
-- Hosting: GitHub Pages via Actions, base path `/coaching-tracker/`.
+- Hosting: GitHub Pages via Actions, base path `/Newhouse-Career-Coaching/`.
 
 ## Design tokens (from the approved demo)
 ```css
