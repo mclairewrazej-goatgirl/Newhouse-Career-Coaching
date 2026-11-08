@@ -71,7 +71,7 @@ You only do this once, no matter how many coaches use the app.
 
 1. Create a new Google Sheet in your account named **Coaching Tracker (template)**. Leave it empty; the connector creates the tabs.
 2. In the sheet: **Extensions › Apps Script**. A code editor opens in a new tab.
-3. Delete the sample code in `Code.gs`. Copy each file from this repo's `apps-script/` folder into the editor, using **+ › Script** for `.gs` files and **+ › HTML** for `.html` files, with the same names.
+3. Delete the sample code in `Code.gs`. Copy each file from this repo's `apps-script/` folder (all `.gs` and `.html` files, including `Shared.gs`) into the editor, using **+ › Script** for `.gs` files and **+ › HTML** for `.html` files, with the same names.
 4. Click the gear icon (**Project Settings**) and tick **Show "appsscript.json" manifest file in editor**. Replace its contents with `apps-script/appsscript.json`.
 5. In `Config.gs`, set `APP_URL` to your GitHub Pages address from step A1.
 6. Click **Save** (disk icon). Close the editor.
@@ -341,9 +341,11 @@ Newhouse-Career-Coaching/
 │   ├── Config.gs           # APP_URL, token lifetime, lockout settings
 │   ├── Api.gs              # doGet/doPost router
 │   ├── Auth.gs             # password hashing, tokens, lockout
-│   ├── Data.gs             # read/write Clients, Planned, Sessions
+│   ├── Data.gs             # read/write all six tabs
+│   ├── Shared.gs           # pure helpers: schema, validation, row mapping (mirrored in app/src/shared)
 │   ├── Menu.gs             # sheet menu: Prepare, Finish setup, Change password
-│   └── Setup.html          # the "Finish setup" side panel
+│   ├── Setup.html          # the "Finish setup" side panel
+│   └── TESTING.md          # checklist + curl commands for a test copy
 ├── .github/workflows/deploy.yml
 ├── CLAUDE.md               # context for Claude Code
 ├── WORKPLAN.md             # phased build plan

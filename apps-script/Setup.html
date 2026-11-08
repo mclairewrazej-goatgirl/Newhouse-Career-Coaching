@@ -1,5 +1,161 @@
+<!DOCTYPE html>
 <!--
-  Setup.html — the "Finish setup" side panel. Takes the connector address,
-  email and password, then shows the coach's personal app link.
-  Filled in during Phase 1.
+  Setup.html — the "Finish setup" side panel (also used for "Change email
+  or password"). Takes the connector address, email and password, then
+  shows the coach's personal app link. Opened from Menu.gs.
 -->
+<html>
+  <head>
+    <base target="_top" />
+    <meta charset="utf-8" />
+    <style>
+      body { font-family: Inter, system-ui, sans-serif; color: #1B1F1E; background: #F5F4EF; margin: 0; padding: 16px; font-size: 14px; line-height: 1.45; }
+      h1 { font-family: "Space Grotesk", Inter, sans-serif; font-size: 18px; margin: 0 0 6px; }
+      p { margin: 0 0 12px; color: #3E4441; }
+      .card { background: #FFFFFF; border: 1px solid #E2E0D8; border-radius: 16px; padding: 14px; margin-bottom: 12px; }
+      label { display: block; font-weight: 600; margin: 12px 0 4px; }
+      label:first-child { margin-top: 0; }
+      .hint { color: #5C625F; font-size: 13px; margin: 4px 0 0; }
+      input { width: 100%; box-sizing: border-box; min-height: 44px; padding: 8px 10px; border: 1px solid #CFCCC2; border-radius: 12px; font: inherit; background: #fff; color: #1B1F1E; }
+      input:focus, button:focus, a:focus { outline: 3px solid #1F5E57; outline-offset: 2px; }
+      .primary, .secondary { min-height: 44px; padding: 0 16px; border-radius: 12px; font: inherit; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+      .primary { background: #1F5E57; color: #FFFFFF; border: 0; width: 100%; margin-top: 4px; }
+      .primary[disabled] { opacity: .6; cursor: wait; }
+      .secondary { background: #FFFFFF; color: #1F5E57; border: 1px solid #1F5E57; }
+      .row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+      .row .primary { width: auto; margin: 0; }
+      .problems { background: #FBEFE3; color: #7A3D0C; border-radius: 12px; padding: 10px 12px; margin: 0 0 12px; }
+      .problems ul { margin: 0; padding-left: 18px; }
+      .ok { color: #1F5E57; font-weight: 600; }
+      [hidden] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <? if (mode === 'change') { ?>
+      <h1>Change email or password</h1>
+      <p>Choose new sign-in details. Every phone and computer will be signed out and will need the new password. You don't need the old one.</p>
+    <? } else { ?>
+      <h1>Finish setup</h1>
+      <p>Choose the email and password you'll use to sign in to the app. They're stored only in your copy of the sheet, and the password is kept scrambled, never as plain text.</p>
+    <? } ?>
+
+    <form id="form" class="card" novalidate>
+      <div id="problems" class="problems" role="alert" hidden></div>
+
+      <label for="address">Connector address</label>
+      <input id="address" name="address" type="url" autocomplete="off" spellcheck="false"
+             placeholder="https://script.google.com/macros/s/…/exec" required />
+      <p class="hint">Paste the address you copied after clicking Deploy. It ends in <strong>/exec</strong>.</p>
+
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="username" required />
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="new-password" minlength="10" required />
+      <p class="hint">At least 10 characters.</p>
+
+      <label for="confirm">Type the password again</label>
+      <input id="confirm" name="confirm" type="password" autocomplete="new-password" required />
+
+      <div class="row">
+        <button id="save" class="primary" type="submit">Save and get my app link</button>
+      </div>
+    </form>
+
+    <div id="done" class="card" hidden>
+      <p class="ok" role="status">All set. Your sign-in details are saved.</p>
+      <p>This is your <strong>personal app link</strong>. Open it once on each phone or computer you use. Bookmark it or add it to your home screen.</p>
+      <label for="link">Your app link</label>
+      <input id="link" readonly onclick="this.select()" />
+      <div class="row">
+        <a id="open" class="primary" href="#" target="_blank" rel="noopener">Open the app</a>
+        <button id="copy" class="secondary" type="button">Copy</button>
+        <span id="copied" class="ok" role="status" style="align-self:center"></span>
+      </div>
+      <p class="hint" style="margin-top:12px">You can find this link again any time under Coaching Tracker › Show my app link.</p>
+    </div>
+
+    <script>
+      var ADDRESS_RE = /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/;
+      var form = document.getElementById('form');
+      var problemsBox = document.getElementById('problems');
+      var saveBtn = document.getElementById('save');
+
+      function showProblems(list) {
+        if (!list.length) { problemsBox.hidden = true; return; }
+        problemsBox.innerHTML = '';
+        var ul = document.createElement('ul');
+        list.forEach(function (text) {
+          var li = document.createElement('li');
+          li.textContent = text;
+          ul.appendChild(li);
+        });
+        problemsBox.appendChild(ul);
+        problemsBox.hidden = false;
+      }
+
+      function value(id) { return document.getElementById(id).value; }
+
+      // Quick checks here for fast feedback; the sheet checks everything again on save.
+      function check() {
+        var list = [];
+        var address = value('address').trim();
+        if (/\/dev$/.test(address)) list.push('That is the test address (it ends in /dev). Copy the one that ends in /exec.');
+        else if (!ADDRESS_RE.test(address)) list.push('The connector address should start with https://script.google.com/macros/s/ and end with /exec.');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value('email').trim())) list.push('Enter a valid email address.');
+        if (value('password').length < 10) list.push('Use at least 10 characters for the password.');
+        if (value('password') !== value('confirm')) list.push("The two passwords don't match.");
+        return list;
+      }
+
+      google.script.run.withSuccessHandler(function (info) {
+        if (info.address && !value('address')) document.getElementById('address').value = info.address;
+        if (info.email && !value('email')) document.getElementById('email').value = info.email;
+      }).getSetupInfo();
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var list = check();
+        showProblems(list);
+        if (list.length) return;
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving…';
+        google.script.run
+          .withSuccessHandler(function (res) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save and get my app link';
+            if (!res.ok) { showProblems(res.problems); return; }
+            document.getElementById('password').value = '';
+            document.getElementById('confirm').value = '';
+            form.hidden = true;
+            document.getElementById('link').value = res.appLink;
+            document.getElementById('open').href = res.appLink;
+            document.getElementById('done').hidden = false;
+          })
+          .withFailureHandler(function () {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save and get my app link';
+            showProblems(['Something went wrong while saving. Please try again.']);
+          })
+          .saveSetup({
+            address: value('address').trim(),
+            email: value('email').trim(),
+            password: value('password'),
+            confirm: value('confirm'),
+          });
+      });
+
+      document.getElementById('copy').addEventListener('click', function () {
+        var input = document.getElementById('link');
+        input.select();
+        function ok() { document.getElementById('copied').textContent = 'Copied'; }
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(input.value).then(ok, function () { document.execCommand('copy'); ok(); });
+        } else {
+          document.execCommand('copy');
+          ok();
+        }
+      });
+    </script>
+  </body>
+</html>

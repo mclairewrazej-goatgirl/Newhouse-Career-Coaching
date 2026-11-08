@@ -29,6 +29,10 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    // Tests read ../apps-script/Shared.gs to check it matches src/shared/connector.ts.
+    fs: { allow: ['.', '../apps-script'] },
+  },
   test: {
     environment: 'node',
   },
