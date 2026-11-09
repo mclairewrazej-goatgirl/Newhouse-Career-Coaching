@@ -37,7 +37,13 @@ describe('coachingSummary', () => {
     expect([s.from, s.to, s.totalMin]).toEqual(['2026-10-01', '2026-11-05', 155.5]);
   });
   it('includes connected mentors A–Z, archived ones too', () => {
-    expect(coachingSummary(data(), 'c_a')!.mentors.map((m) => m.name)).toEqual(['Bea', 'Zed']);
+    expect(coachingSummary(data(), 'c_a')!.mentors.map((m) => m.mentor.name)).toEqual(['Bea', 'Zed']);
+  });
+  it('carries whether and when the client made contact', () => {
+    const d = data();
+    d.mentorLinks[1] = { ...d.mentorLinks[1], contacted: 'yes', contactedOn: '2026-11-20' };
+    const bea = coachingSummary(d, 'c_a')!.mentors[0];
+    expect(bea.link).toMatchObject({ contacted: 'yes', contactedOn: '2026-11-20', status: 'introduced' });
   });
   it('orders same-day sessions by when they were saved', () => {
     const d = { ...data(), sessions: [session('s_b', 'c_a', '2026-10-01', 1, '2026-10-01T15:00'), session('s_a', 'c_a', '2026-10-01', 1, '2026-10-01T09:00')] };

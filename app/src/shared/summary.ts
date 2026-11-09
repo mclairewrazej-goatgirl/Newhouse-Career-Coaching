@@ -1,5 +1,10 @@
 /** What goes into a client's printable coaching summary. Pure, so it can be tested. */
-import type { AllData, Client, Mentor, Session } from '../api/types';
+import type { AllData, Client, Mentor, MentorLink, Session } from '../api/types';
+
+export interface SummaryMentor {
+  mentor: Mentor;
+  link: MentorLink;
+}
 
 export interface CoachingSummary {
   client: Client;
@@ -9,8 +14,8 @@ export interface CoachingSummary {
   from: string;
   to: string;
   totalMin: number;
-  /** Mentors connected with this client, A–Z. */
-  mentors: Mentor[];
+  /** Mentors connected with this client, A–Z, with the connection (status, whether and when they made contact). */
+  mentors: SummaryMentor[];
 }
 
 export function coachingSummary(data: AllData, clientId: string): CoachingSummary | null {
@@ -19,8 +24,13 @@ export function coachingSummary(data: AllData, clientId: string): CoachingSummar
   const sessions = data.sessions
     .filter((s) => s.clientId === clientId)
     .sort((a, b) => (a.date === b.date ? a.createdAt.localeCompare(b.createdAt) : a.date.localeCompare(b.date)));
-  const mentorIds = new Set(data.mentorLinks.filter((l) => l.clientId === clientId).map((l) => l.mentorId));
-  const mentors = data.mentors.filter((m) => mentorIds.has(m.mentorId)).sort((a, b) => a.name.localeCompare(b.name));
+  const mentors: SummaryMentor[] = [];
+  for (const link of data.mentorLinks) {
+    if (link.clientId !== clientId) continue;
+    const mentor = data.mentors.find((m) => m.mentorId === link.mentorId);
+    if (mentor) mentors.push({ mentor, link });
+  }
+  mentors.sort((a, b) => a.mentor.name.localeCompare(b.mentor.name));
   return {
     client,
     sessions,

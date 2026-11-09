@@ -227,8 +227,13 @@ select.field{appearance:none;background-image:linear-gradient(45deg,transparent 
 .doc-session h3{font-size:.8125rem;text-transform:uppercase;letter-spacing:.04em;color:#444;margin:8px 0 2px}
 .doc-session ul{margin:0;padding-left:20px}
 .doc-empty{color:#555}
-.doc-people{list-style:none;padding-left:0!important;display:flex;flex-direction:column;gap:6px}
 .doc-contact{display:block;color:#333}
+.doc-mentors{width:100%;border-collapse:collapse;margin-top:4px}
+.doc-mentors th{text-align:left;font-size:.8125rem;text-transform:uppercase;letter-spacing:.04em;color:#444;padding:4px 8px 4px 0;border-bottom:1px solid #ccc}
+.doc-mentors td{vertical-align:top;padding:6px 8px 6px 0;border-bottom:1px solid #eee}
+.doc-mentors tr{break-inside:avoid}
+.doc-check{font-size:1.25rem;line-height:1;text-align:center;width:6.5em}
+.doc-mentors th:nth-child(2){text-align:center}
 .doc-foot{margin-top:14px;font-size:.8125rem;color:#555}
 
 @media print{

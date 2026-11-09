@@ -1,5 +1,6 @@
 import { useEffect, useId, useState } from 'react';
 import { toDateString } from '../shared/dates';
+import { STATUS_SHORT } from '../shared/mentors';
 import { formatMinutes } from '../shared/minutes';
 import { coachingSummary, dateRange, longDate, summaryTitle } from '../shared/summary';
 import { useSync } from '../state/AppContext';
@@ -75,18 +76,34 @@ export function CoachingSummary({ clientId, onBack }: { clientId: string; onBack
 
         {mentors.length > 0 && (
           <section className="doc-session">
-            <h2>People to connect with</h2>
-            <ul className="doc-people">
-              {mentors.map((m) => (
-                <li key={m.mentorId}>
-                  <strong>{m.name}</strong>
-                  {(m.role || m.organization) && <>, {[m.role, m.organization].filter(Boolean).join(', ')}</>}
-                  {withContacts && (m.email || m.phone) && (
-                    <span className="doc-contact">{[m.email, m.phone].filter(Boolean).join(' · ')}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
+            <h2>Mentor connections</h2>
+            <table className="doc-mentors">
+              <thead>
+                <tr><th scope="col">Mentor</th><th scope="col">Made contact</th><th scope="col">Date</th></tr>
+              </thead>
+              <tbody>
+                {mentors.map(({ mentor: m, link }) => {
+                  const made = link.contacted === 'yes';
+                  return (
+                    <tr key={link.linkId}>
+                      <td>
+                        <strong>{m.name}</strong>
+                        {(m.role || m.organization) && <>, {[m.role, m.organization].filter(Boolean).join(', ')}</>}
+                        <span className="doc-contact">{STATUS_SHORT[link.status]} {longDate(link.date)}</span>
+                        {withContacts && (m.email || m.phone) && (
+                          <span className="doc-contact">{[m.email, m.phone].filter(Boolean).join(' · ')}</span>
+                        )}
+                      </td>
+                      <td className="doc-check">
+                        <span aria-hidden="true">{made ? '☑' : '☐'}</span>
+                        <span className="sr-only">{made ? 'Yes' : 'Not yet'}</span>
+                      </td>
+                      <td>{made && link.contactedOn ? longDate(link.contactedOn) : ''}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </section>
         )}
 
