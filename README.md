@@ -1,6 +1,6 @@
 # Coaching Tracker
 
-A simple, phone-friendly app for career coaches to plan sessions, run a session timer, take point-form notes, keep a running total of time spent with each client, track which mentors have been suggested to whom, print a coaching summary for each client, and look back at what advice actually helped. Everything is saved in a **Google Sheet that belongs to the coach**, not to the person who built the app.
+A simpl app for professional coaches to plan sessions, run a session timer, take point-form notes, keep a running total of time spent with each client, track which mentors have been suggested to whom, print a coaching summary for each client, and look back at what advice actually helped. Everything is saved in a **Google Sheet that belongs to the coach**, not to the person who built the app.
 
 The app is protected by an **email and password** that the coach chooses. Anyone can open the web address, but without the password they only see a sign-in screen and can't read or change anything.
 
